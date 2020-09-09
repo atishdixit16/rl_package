@@ -164,7 +164,7 @@ class ResSimEnv():
         if k_type=='uniform':
             self.k = k*np.ones(self.grid.shape)
         elif k_type=='random':
-            k_train = np.load('k_train_batch.npy')
+            k_train = np.load('rl_package/ressim_env/k_train_batch.npy')
             self.k = k_train[ np.random.randint(k_train.shape[0]) ] 
         else:
             raise Exception('invalid k_type. should be one of these: uniform or random')
