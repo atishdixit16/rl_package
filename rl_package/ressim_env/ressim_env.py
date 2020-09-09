@@ -1,5 +1,6 @@
 import gym
 from gym import spaces
+from gym.utils import seeding
 
 import numpy as np
 import functools
@@ -21,7 +22,7 @@ class ResSimEnv():
                  seed=1):
 
         # for reproducibility
-        np.random.seed(seed)
+        self.seed(seed)
 
         # grid
         self.nx = nx
@@ -82,6 +83,10 @@ class ResSimEnv():
             self.action_space = spaces.Box(low=np.array([0], dtype=np.float64), high=np.array([1], dtype=np.float64), dtype=np.float64)
         else:
             raise Exception('invalid action space. should be one of these: discrete or continous')
+
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
 
     def step(self, action):
         
