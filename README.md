@@ -1,11 +1,11 @@
-## rl_package
+# rl_package
 RL algorithm frameworks and ressim env 
 
-# installation instruction.
+## installation instruction.
 1. Change this repository to working directory
 2. install with the `pip` command: `pip install -e . `
 
-# python commands for using the pachage:
+## python commands for using the pachage:
 
 DQN algorithm function: `from rl_packages.dqn_vanilla.dqn import dqn_algorithm`
 
@@ -16,7 +16,7 @@ Reservoir simulation environment: `from rl_packages.ressim_env.ressim_env import
 Reservoir Simulation enviroment using *template: `from rl_packages.ressim_env.env_template import generate_environment`
 
 
-# *template naming convention:
+## *template naming convention:
 
 phase no. : 1ph for single phase, 
 
