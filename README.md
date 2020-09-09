@@ -18,38 +18,31 @@ Reservoir Simulation enviroment using *template: `from rl_packages.ressim_env.en
 
 ## *template naming convention:
 
-phase no. : 1ph for single phase, 
-
-          2ph for two phase
+- phase no. : 
+          - 1ph for single phase, 
+          - 2ph for two phase
           
-action space : C for coninous (for policy based algorithms), 
-
-               D for discrete (for value based algorithms)
+- action space : 
+          - C for coninous (for policy based algorithms), 
+          - D for discrete (for value based algorithms)
                
-permeability : CK for contant permeability, 
-
-               RK for random permeability
+- permeability : 
+          - CK for contant permeability, 
+          - RK for random permeability
                
-state spatial param : full for all saturation values, 
-
-                      well for saturation values at well location, 
+- state spatial param : 
+          - full for all saturation values,
+          - well for saturation values at well location, 
+          - vic for saturation values in the vicinity of wells
                       
-                      vic for saturation values in the vicinity of wells
-                      
-state temporal param : 1t for a single step saturation values
-
-                       2t for last two steps saturation values
-                       
-                       3t for last three steps saturation values
+- state temporal param : 
+          - 1t for a single step saturation values
+          - 2t for last two steps saturation values
+          - 3t for last three steps saturation values
                        
 For example, the results of `generate_environment('2ph-D-CK-well-3t')` refers to an environment with 
-
                 - two phase flow
-                
-                - discrete action space
-                
+                - discrete action space 
                 - contant permeability value
-                
                 - state represented with saturations at well locations
-                
                 - state represented with last three steps of the episode
