@@ -5,6 +5,7 @@ import numpy as np
 import functools
 from collections import deque
 
+import rl_package
 from rl_package.ressim_env.ressim import Grid, SaturationEquation, PressureEquation
 from rl_package.ressim_env.utils import linear_mobility, quadratic_mobility, lamb_fn, f_fn, df_fn
 
@@ -146,7 +147,7 @@ class ResSimEnv():
 
     def get_state_que(self, state_temporal_param):
         # create a queue of the initial state which can be appended later on
-        assert state_temporal_param in [1,2,3], 'invalid state_temporal_param. should ne one of these: 1,2,3'
+        assert state_temporal_param in [1,2,3], 'invalid state_temporal_param. should be one of these: 1,2,3'
         state_que = deque(maxlen=state_temporal_param)
         for _ in range(state_temporal_param):
             state_que.append(self.state_spatial_processing())
@@ -164,7 +165,7 @@ class ResSimEnv():
         if k_type=='uniform':
             self.k = k*np.ones(self.grid.shape)
         elif k_type=='random':
-            k_train = np.load('rl_package/ressim_env/k_train_batch.npy')
+            k_train = np.load(rl_package.__file__+'/rl_package/ressim_env/k_train_batch.npy')
             self.k = k_train[ np.random.randint(k_train.shape[0]) ] 
         else:
             raise Exception('invalid k_type. should be one of these: uniform or random')
