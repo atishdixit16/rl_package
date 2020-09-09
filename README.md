@@ -6,10 +6,14 @@ installation instruction.
 2. install with the `pip` command: `pip install -e . `
 
 python commands for using the pachage:
+
 DQN algorithm function: `from rl_packages.dqn_vanilla.dqn import dqn_algorithm`
+
 PPO algorithm function: `from rl_packages.ppo_vanilla.ppo import ppo_algorithm`
+
 Reservoir simulation environment: `from rl_packages.ressim_env.ressim_env import ResSimEnv`
-Reservoir Simulation enviroment using *template: `from rl_packages.ressim_env.env_template import generate_environment
+
+Reservoir Simulation enviroment using *template: `from rl_packages.ressim_env.env_template import generate_environment`
 
 
 *template naming convention:
