@@ -3,7 +3,8 @@ RL algorithm frameworks and ressim env
 
 ## installation instruction.
 1. Change this repository to working directory
-2. install with the `pip` command: `pip install -e . `
+2. Change '__file__' variable in __init__.py to working directory
+3. install with the `pip` command: `pip install -e . `
 
 ## python commands for using the pachage:
 
