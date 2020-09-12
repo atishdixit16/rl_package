@@ -37,7 +37,7 @@ def get_activation(activation):
     else:
         raise Exception('invalid activation key. should be one of these: relu, tanh or sigmoid')
 
-def get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, network_key):
+def get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, network_key):
     module_list = {}
     for layer, activation, i in zip( MLP_LAYERS, MLP_ACTIVATIONS, range(len(MLP_LAYERS)) ):
         if i==0:
@@ -54,15 +54,20 @@ def get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, network
         module_list['layer '+str(i+1)] = nn.Linear(last_layer, 1)
     else:
         raise Exception('invalid network key. should be one of these: actor or critic')
+    
+    if network_key=='actor':
+        if ACTOR_FINAL_ACTIVATION is not None:
+            module_list['final layer act']=get_activation(ACTOR_FINAL_ACTIVATION)
+
     return module_list
 
 
 class ActorCritic(nn.Module):
-    def __init__(self, num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, std=0.0):
+    def __init__(self, num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, std=0.0):
         super(ActorCritic, self).__init__()
 
-        self.critic = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS,'critic') )  )
-        self.actor = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS,'actor') ) )
+        self.critic = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, 'critic') )  )
+        self.actor = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, 'actor') ) )
         self.log_std = nn.Parameter(torch.ones(1, num_outputs) * std)
         
         self.apply(init_weights)
@@ -133,7 +138,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
                   TOTAL_STEPS=240000, NSTEPS=64, MINIBATCH_SIZE=128, N_EPOCH=30,
                   CLIP_PARAM=0.1, VF_COEF=0.5, ENT_COEF=0.001,
                   GAMMA=0.99, LAMBDA=0.95,
-                  MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], LEARNING_RATE=1e-3,
+                  MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], ACTOR_FINAL_ACTIVATION='None', ACTOR_DIST_LOG_STD=0.0, LEARNING_RATE=1e-3,
                   PRINT_FREQ=8000, N_TEST_ENV=50, TEST_ENV_FUNC=test_env,
                   SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_FILE_NAME='model',
                   SEED=4):
@@ -169,7 +174,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
     mini_batch_size  = MINIBATCH_SIZE
     ppo_epochs       = N_EPOCH
 
-    model = ActorCritic(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS).to(device)
+    model = ActorCritic(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, std=ACTOR_DIST_LOG_STD).to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
     total_steps = TOTAL_STEPS
