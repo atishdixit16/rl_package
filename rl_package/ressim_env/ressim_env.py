@@ -112,7 +112,7 @@ class ResSimEnv():
             self.solverP.step()
             # solve saturation
             self.solverS.v = self.solverP.v
-            self.solverS.step_implicit(self.dt)
+            self.solverS.step(self.dt)
             self.s_load = self.solverS.s
             oil_pr = oil_pr + (-self.q[0,0] * (1 - self.f_fn( self.s_load[0,0]) ) + -self.q[-1,0] * ( 1 - self.f_fn( self.s_load[-1,0]) ) )*self.dt # oil production
 
