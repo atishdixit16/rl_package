@@ -299,7 +299,7 @@ def dqn_algorithm(ENV,
                 steps.append(t)
                 NN_tr_loss.append(dqn_solver.loss)
                 if VERBOSE:
-                    print('Exploration %: '+str(int(explore_percent[-1]))+', Episodes: '+str(episodes[-1])+', Mean_reward: '+str(mean100_rew[-1])+', timestep: '+str(t)+', tr_loss: '+str(round(NN_tr_loss[-1],4))+', Mean_reward_online: '+str(mean100_rew_online[-1]) )
+                    print('Exploration %: '+str(int(explore_percent[-1]))+', Episodes: '+str(episodes[-1])+', Mean_reward: '+str(round( mean100_rew[-1], 2) )+', timestep: '+str(t)+', tr_loss: '+str(round(NN_tr_loss[-1],4))+', Mean_reward_online: '+str( round( mean100_rew_online[-1] , 2) ) )
 
             if t>TOTAL_TIMESTEPS:
                 output_table = np.stack((steps, mean100_rew, episodes, explore_percent, NN_tr_loss))
