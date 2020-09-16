@@ -14,7 +14,6 @@ import gym
 
 from rl_package.utils.set_seed import set_seed
 from rl_package.utils.multiprocessing_env import SubprocVecEnv
-from rl_package.utils.ParallelEnvWrapper import ParallelEnvWrapper 
 
 class DQNSolver:
 
@@ -91,20 +90,16 @@ class DQNSolver:
 
     def remember(self, state, action, reward, next_state, done):
         for i in range(state.shape[0]):
-            if not (np.isnan(state[i][0]) or np.isnan(next_state[i][0])):
-                self.memory.append((state[i], action[i], reward[i], next_state[i], done[i]))
+            self.memory.append((state[i], action[i], reward[i], next_state[i], done[i]))
 
     def act(self, state):
         actions = []
         for s in state:
-            if np.isnan(s[0]):
+            if random.random() < self.exploration_rate:
                 actions.append(random.randrange(self.action_space))
             else:
-                if random.random() < self.exploration_rate:
-                    actions.append(random.randrange(self.action_space))
-                else:
-                    q_values = self.model.predict(s.reshape(1,-1))
-                    actions.append(np.argmax(q_values[0]))
+                q_values = self.model.predict(s.reshape(1,-1))
+                actions.append(np.argmax(q_values[0]))
         return actions
 
     def experience_replay(self):
@@ -268,45 +263,34 @@ def dqn_algorithm(ENV,
                            EXPLORATION_MIN,
                            EXPLORATION_FRACTION)
 
-    envs = ParallelEnvWrapper(envs)
     t = 0
-    episode_rewards = [0.0]*num_envs
-    explore_percent, episodes, mean100_rew, steps, NN_tr_loss, mean100_rew_online = [],[],[],[],[],[]
+    explore_percent, mean100_rew, steps, NN_tr_loss = [],[],[],[]
     while True:
         state = envs.reset()
-        # state = np.reshape(state, [1, observation_space])
         while True:
             t += num_envs
             dqn_solver.eps_timestep_decay(t)
             action = dqn_solver.act(state)
             state_next, reward, terminal, _ = envs.step(action)
-            # print(terminal)
-            # reward = reward if not terminal else -reward
-            # state_next = np.reshape(state_next, [1, observation_space])
             dqn_solver.remember(state, action, reward, state_next, terminal)
             if t%TRAINING_FREQUENCY==0:
                 dqn_solver.experience_replay()
             state = state_next
-            episode_rewards[-num_envs:] = [i+j for (i,j) in zip(episode_rewards[-num_envs:],reward)]
-            # num_episodes = len(episode_rewards)
-            # print(terminal)
             if (t%PRINT_FREQ==0):
                 test_reward = np.mean([TEST_ENV_FUNC(env, dqn_solver.model) for _ in range(N_EP_AVG)])
                 explore_percent.append(dqn_solver.exploration_rate*100)
-                episodes.append(len(episode_rewards))
                 mean100_rew.append(test_reward)
-                mean100_rew_online.append(round(np.mean(episode_rewards[(-1-N_EP_AVG):-1]), 1))
                 steps.append(t)
                 NN_tr_loss.append(dqn_solver.loss)
                 if VERBOSE:
-                    print('Exploration %: '+str(int(explore_percent[-1]))+', Episodes: '+str(episodes[-1])+', Mean_reward: '+str(round( mean100_rew[-1], 2) )+', timestep: '+str(t)+', tr_loss: '+str(round(NN_tr_loss[-1],4))+', Mean_reward_online: '+str( round( mean100_rew_online[-1] , 2) ) )
+                    print('Exploration %: '+str(int(explore_percent[-1]))+', Mean_reward: '+str(round( mean100_rew[-1], 2) )+', timestep: '+str(t)+', tr_loss: '+str(round(NN_tr_loss[-1],4)) )
 
             if t>TOTAL_TIMESTEPS:
-                output_table = np.stack((steps, mean100_rew, episodes, explore_percent, NN_tr_loss))
+                output_table = np.stack((steps, mean100_rew, explore_percent, NN_tr_loss))
                 if not os.path.exists(FILE_PATH):
                     os.makedirs(FILE_PATH)
                 file_name = str(FILE_PATH)+LOG_FILE_NAME+'.csv'
-                np.savetxt(file_name, np.transpose(output_table), delimiter=',', header='Timestep,Rewards,Episodes,Exploration %,Training Score')
+                np.savetxt(file_name, np.transpose(output_table), delimiter=',', header='Timestep,Rewards,Exploration %,Training Score')
                 after = time.time()
                 time_taken = after-before
                 np.save( str(FILE_PATH)+TIME_FILE_NAME, time_taken )
@@ -316,10 +300,6 @@ def dqn_algorithm(ENV,
                 return dqn_solver.model
             if USE_TARGET_NETWORK and t%TARGET_UPDATE_FREQUENCY==0:
                 dqn_solver.update_target_network()
-            # print(t)
-            if terminal.all():
-                episode_rewards += [0.0]*num_envs
-                break
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -337,8 +317,8 @@ if __name__ == "__main__":
 
     # DQN algorithms parameters
     parser.add_argument('--num_env', type=int, default=8, help='no. for environment vectorization')
-    parser.add_argument('--seed', type=int, default=5, help='seed for pseudo random generator')
-    parser.add_argument('--total_timesteps', type=int, default=250000, help='Total number of timesteps')
+    parser.add_argument('--seed', type=int, default=1, help='seed for pseudo random generator')
+    parser.add_argument('--total_timesteps', type=int, default=100000, help='Total number of timesteps')
     parser.add_argument('--gamma', type=float, default=0.95, help='discount factor')
     parser.add_argument('--buffer_size',  type=int, default=1000, help='Replay buffer size')
     parser.add_argument('--batch_size',  type=int, default=128, help='batch size for experience replay')
