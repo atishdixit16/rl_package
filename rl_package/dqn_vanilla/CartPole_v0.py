@@ -1,7 +1,8 @@
 from rl_package.dqn_vanilla.dqn import dqn_algorithm
+from rl_package.utils.plot_functions import reward_plot
 import gym
 
-for i in range(1,6):
+for i in range(5):
     model = \
     dqn_algorithm(ENV= gym.make('CartPole-v0'),
                   NUM_ENV=8,
@@ -32,3 +33,5 @@ for i in range(1,6):
                   TARGET_UPDATE_FREQUENCY = 1000,
                   LOAD_WEIGHTS = False,
                   LOAD_WEIGHTS_MODEL_PATH = 'CartPole-v0/results/model'+str(i)+'.h5')
+
+reward_plot( [ '/home/ad181/rl_package/rl_package/dqn_vanilla/CartPole_results'], ['DQN Cartpole-v0']  )

@@ -1,7 +1,7 @@
 from rl_package.dqn_vanilla.dqn import dqn_algorithm
 import gym
 
-for i in range(1,6):
+for i in range(5):
     model = \
     dqn_algorithm(ENV= gym.make('MountainCar-v0'),
                   NUM_ENV=8,
