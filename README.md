@@ -14,6 +14,8 @@ PPO algorithm function: `from rl_package.ppo_vanilla.ppo import ppo_algorithm`
 
 Reservoir simulation environment: `from rl_package.ressim_env.ressim_env import ResSimEnv`
 
+RL reward plot function: `from rl_package.utils.plot_functions import reward_plot`
+
 Reservoir Simulation enviroment using *template: `from rl_package.ressim_env.env_template import generate_environment`
 
 
