@@ -37,3 +37,5 @@ def reward_plot(paths, case_titles):
     plt.xlabel('Timesteps')
     plt.ylabel('Rewards')
     plt.savefig(paths[0]+'/rewards.png')
+
+    print('reward.png is saved at {}'.format(paths[0]))
