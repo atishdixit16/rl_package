@@ -112,7 +112,7 @@ def ppo_iter(mini_batch_size, states, actions, log_probs, returns, advantage):
     for i in range(len(ids)):
         yield states[ids[i], :], actions[ids[i], :], log_probs[ids[i], :], returns[ids[i], :], advantage[ids[i], :]        
 
-def ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantages, model, optimizer, CLIP_PARAM, VF_COEF, ENT_COEF  ):
+def ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantages, model, optimizer, CLIP_PARAM, VF_COEF, ENT_COEF, GRAD_CLIP  ):
     for _ in range(ppo_epochs):
         for state, action, old_log_probs, return_, advantage in ppo_iter(mini_batch_size, states, actions, log_probs, returns, advantages):
             dist, value = model(state)
@@ -129,6 +129,8 @@ def ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns,
             loss = VF_COEF * critic_loss + actor_loss - ENT_COEF * entropy
 
             optimizer.zero_grad()
+            if GRAD_CLIP:
+                nn.utils.clip_grad_value_(model.parameters(), 10)
             loss.backward()
             optimizer.step()
     # print(loss)
@@ -138,12 +140,13 @@ def ppo_algorithm(ENV, NUM_ENV=8,
                   TOTAL_STEPS=240000, NSTEPS=64, MINIBATCH_SIZE=128, N_EPOCH=30,
                   CLIP_PARAM=0.1, VF_COEF=0.5, ENT_COEF=0.001,
                   GAMMA=0.99, LAMBDA=0.95,
-                  MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], ACTOR_FINAL_ACTIVATION='None', ACTOR_DIST_LOG_STD=0.0, LEARNING_RATE=1e-3,
+                  MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], GRAD_CLIP=False, ACTOR_FINAL_ACTIVATION='None', ACTOR_DIST_LOG_STD=0.0, LEARNING_RATE=1e-3,
                   PRINT_FREQ=8000, N_TEST_ENV=50, TEST_ENV_FUNC=test_env,
                   SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_FILE_NAME='model',
                   SEED=4):
 
     '''
+        PPO parameters:
         ENV : environment class object, 
         NUM_ENV : number of vectorized environments,
         TOTAL_STEPS : Total number of timesteps, 
@@ -260,7 +263,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
         actions   = torch.cat(actions)
         advantage = returns - values
 
-        ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantage, model, optimizer, CLIP_PARAM, VF_COEF, ENT_COEF)
+        ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantage, model, optimizer, CLIP_PARAM, VF_COEF, ENT_COEF, GRAD_CLIP)
 
     if SAVE_RESULTS:
         output_table = np.stack((timesteps, test_rewards))
