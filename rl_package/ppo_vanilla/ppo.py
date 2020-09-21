@@ -143,6 +143,33 @@ def ppo_algorithm(ENV, NUM_ENV=8,
                   SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_FILE_NAME='model',
                   SEED=4):
 
+    '''
+        ENV : environment class object, 
+        NUM_ENV : number of vectorized environments,
+        TOTAL_STEPS : Total number of timesteps, 
+        NSTEPS : Number of steps in each iteration (smaller than terminal step), 
+        MINIBATCH_SIZE : size minibatch used to train the PPO network, 
+        N_EPOCH : no. of epoch in network training,
+        CLIP_PARAM : clipping parameter in PPO, 
+        VF_COEF : values function coefficient, 
+        ENT_COEF : entropy coefficient,
+        GAMMA : dicount factor, 
+        LAMBDA : lambda return term for genaralized advantage estimator,
+        MLP_LAYERS : array of neuron layers for ex. [8 , 8] for two layers with 8 neurons, 
+        MLP_ACTIVATIONS : array of activation function for ex. ['relu','relu'] for relu activations for two ayers, 
+        ACTOR_FINAL_ACTIVATION : activation function for final layer of actor network, 
+        ACTOR_DIST_LOG_STD : log standard distribution for action distribution , 
+        LEARNING_RATE : learning rate for Adam ,
+        PRINT_FREQ : print frequeny for no. of steps, 
+        N_TEST_ENV : number for test env averaging, 
+        TEST_ENV_FUNC : function to test environment with the model,
+        SAVE_RESULTS : boolean to specify whether to save results, 
+        FILE_PATH : file path to save reults, 
+        LOG_FILE_NAME : log file name initial, 
+        SAVE_MODEL : boolean variable to specify whether to save model, 
+        MODEL_FILE_NAME : model file name initial,
+        SEED : seed for reporoducibility
+    '''
     # reproducibility
     set_seed(SEED)
 

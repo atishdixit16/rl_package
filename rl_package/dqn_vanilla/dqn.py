@@ -188,7 +188,7 @@ def dqn_algorithm(ENV,
     '''
     DQN Algorithm parameters
 
-    env_name : string for a gym environment
+    env : environment class object
     num_env : no. for environment vectorization (multiprocessing env)
     total_timesteps : Total number of timesteps
     training_frequency : frequency of training (experience replay)
