@@ -112,7 +112,7 @@ def ppo_iter(mini_batch_size, states, actions, log_probs, returns, advantage):
     for i in range(len(ids)):
         yield states[ids[i], :], actions[ids[i], :], log_probs[ids[i], :], returns[ids[i], :], advantage[ids[i], :]        
 
-def ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantages, model, optimizer, CLIP_PARAM, VF_COEF, ENT_COEF, GRAD_CLIP  ):
+def ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantages, model, optimizer, scheduler, CLIP_PARAM, VF_COEF, ENT_COEF, GRAD_CLIP, LR_ANNEAL  ):
     for _ in range(ppo_epochs):
         for state, action, old_log_probs, return_, advantage in ppo_iter(mini_batch_size, states, actions, log_probs, returns, advantages):
             dist, value = model(state)
@@ -130,7 +130,9 @@ def ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns,
 
             optimizer.zero_grad()
             if GRAD_CLIP:
-                nn.utils.clip_grad_value_(model.parameters(), 10)
+                nn.utils.clip_grad_value_(model.parameters(), 5)
+            if LR_ANNEAL:
+                scheduler.step()
             loss.backward()
             optimizer.step()
     # print(loss)
@@ -140,7 +142,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
                   TOTAL_STEPS=240000, NSTEPS=64, MINIBATCH_SIZE=128, N_EPOCH=30,
                   CLIP_PARAM=0.1, VF_COEF=0.5, ENT_COEF=0.001,
                   GAMMA=0.99, LAMBDA=0.95,
-                  MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], GRAD_CLIP=False, ACTOR_FINAL_ACTIVATION='None', ACTOR_DIST_LOG_STD=0.0, LEARNING_RATE=1e-3,
+                  MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], GRAD_CLIP=False, LR_ANNEAL=False, ACTOR_FINAL_ACTIVATION=None, ACTOR_DIST_LOG_STD=0.0, LEARNING_RATE=1e-3,
                   PRINT_FREQ=8000, N_TEST_ENV=50, TEST_ENV_FUNC=test_env,
                   SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_FILE_NAME='model',
                   SEED=4):
@@ -203,14 +205,15 @@ def ppo_algorithm(ENV, NUM_ENV=8,
     num_steps        = NSTEPS
     mini_batch_size  = MINIBATCH_SIZE
     ppo_epochs       = N_EPOCH
-
-    model = ActorCritic(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, std=ACTOR_DIST_LOG_STD).to(device)
-    optimizer = optim.Adam(model.parameters(), lr=lr)
-
     total_steps = TOTAL_STEPS
     steps  = 0
     timesteps = []
     test_rewards = []
+
+    model = ActorCritic(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, std=ACTOR_DIST_LOG_STD).to(device)
+    optimizer = optim.Adam(model.parameters(), lr=lr)
+    lam = lambda steps: 1-steps/total_steps
+    scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lam)
 
     state = envs.reset()
 
@@ -263,7 +266,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
         actions   = torch.cat(actions)
         advantage = returns - values
 
-        ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantage, model, optimizer, CLIP_PARAM, VF_COEF, ENT_COEF, GRAD_CLIP)
+        ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantage, model, optimizer, scheduler, CLIP_PARAM, VF_COEF, ENT_COEF, GRAD_CLIP, LR_ANNEAL)
 
     if SAVE_RESULTS:
         output_table = np.stack((timesteps, test_rewards))
@@ -277,4 +280,4 @@ def ppo_algorithm(ENV, NUM_ENV=8,
 
 if __name__ == "__main__":
     env = gym.make('Pendulum-v0')
-    model = ppo_algorithm(env)
+    model = ppo_algorithm(env, LR_ANNEAL=True)
