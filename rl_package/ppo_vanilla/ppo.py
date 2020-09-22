@@ -134,13 +134,13 @@ class ActorCritic(nn.Module):
         dist  = Normal(mu, std)
         return dist, value
 
-def test_env(env, model, vis=False):
+def test_env(env, model, device, vis=False):
     state = env.reset()
     if vis: env.render()
     done = False
     total_reward = 0
     while not done:
-        state = torch.FloatTensor(state).unsqueeze(0)
+        state = torch.FloatTensor(state).to(device).unsqueeze(0)
         dist, _ = model(state)
         next_state, reward, done, _ = env.step(dist.sample().cpu().numpy()[0])
         state = next_state
@@ -305,7 +305,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
 
 
             if not steps % PRINT_FREQ:
-                test_reward = np.mean([TEST_ENV_FUNC(env, model) for _ in range(N_TEST_ENV)])
+                test_reward = np.mean([TEST_ENV_FUNC(env, model, device) for _ in range(N_TEST_ENV)])
                 test_rewards.append(test_reward)
                 timesteps.append(steps)
                 print('timestep : {}, reward: {}'.format(steps, round(test_reward)))
