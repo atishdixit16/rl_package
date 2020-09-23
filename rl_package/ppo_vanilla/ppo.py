@@ -140,8 +140,8 @@ def test_env(env, model, device, vis=False):
     done = False
     total_reward = 0
     while not done:
-        state = torch.FloatTensor(state).to(device).unsqueeze(0)
-        dist, _ = model(state)
+        state = torch.FloatTensor(state).unsqueeze(0)
+        dist, _ = model(state.to(device))
         next_state, reward, done, _ = env.step(dist.sample().cpu().numpy()[0])
         state = next_state
         if vis: env.render()
