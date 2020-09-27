@@ -41,6 +41,7 @@ def reward_plot(paths, case_titles, plot_type='median'):
         plt.ylabel('Rewards')
         plt.savefig(paths[0]+'/rewards_median.png')
         plt.close()
+        print('reward_median.png is saved at {}'.format(paths[0]))
     
     if plot_type=='mean':
         for x,y in zip(xs,ys):
@@ -51,5 +52,5 @@ def reward_plot(paths, case_titles, plot_type='median'):
         plt.ylabel('Rewards')
         plt.savefig(paths[0]+'/rewards_mean.png')
         plt.close()
+        print('reward_mean.png is saved at {}'.format(paths[0]))
 
-    print('reward.png is saved at {}'.format(paths[0]))
