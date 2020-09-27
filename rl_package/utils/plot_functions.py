@@ -10,7 +10,8 @@ def get_n_expmt(path): #get no. of log#.csv files in the directory
     assert n_expmt > 0, 'no log#.csv files found in the directory: '+path
     return n_expmt
 
-def reward_plot(paths, case_titles):
+def reward_plot(paths, case_titles, plot_type='median'):
+    assert plot_type in ['median', 'mean'], 'Invalid plot type. Should be one of these: median, mean.'
     data = []
     for path in paths:
         n_expmt = get_n_expmt(path)
@@ -28,15 +29,27 @@ def reward_plot(paths, case_titles):
         for j in range(n_cases):
             y.append(data[i][j][:,1])
         ys.append(y)
+
+
+    if plot_type=='median':
+        for x,y in zip(xs,ys):
+            plt.plot(x, np.nanmedian(y, axis=0) )
+            plt.fill_between(x, np.nanpercentile(y, 25, axis=0), np.nanpercentile(y, 75, axis=0), alpha=0.25)
+        plt.grid('True')
+        plt.legend(case_titles)
+        plt.xlabel('Timesteps')
+        plt.ylabel('Rewards')
+        plt.savefig(paths[0]+'/rewards_median.png')
+        plt.close()
     
-    for x,y in zip(xs,ys):
-        plt.plot(x, np.nanmedian(y, axis=0) )
-        plt.fill_between(x, np.nanpercentile(y, 25, axis=0), np.nanpercentile(y, 75, axis=0), alpha=0.25)
-    plt.grid('True')
-    plt.legend(case_titles)
-    plt.xlabel('Timesteps')
-    plt.ylabel('Rewards')
-    plt.savefig(paths[0]+'/rewards.png')
-    plt.close()
+    if plot_type=='mean':
+        for x,y in zip(xs,ys):
+            plt.plot(x, np.nanmean(y, axis=0) )
+        plt.grid('True')
+        plt.legend(case_titles)
+        plt.xlabel('Timesteps')
+        plt.ylabel('Rewards')
+        plt.savefig(paths[0]+'/rewards_mean.png')
+        plt.close()
 
     print('reward.png is saved at {}'.format(paths[0]))
