@@ -10,8 +10,7 @@ def get_n_expmt(path): #get no. of log#.csv files in the directory
     assert n_expmt > 0, 'no log#.csv files found in the directory: '+path
     return n_expmt
 
-def reward_plot(paths, case_titles, plot_type='median'):
-    assert plot_type in ['median', 'mean'], 'Invalid plot type. Should be one of these: median, mean.'
+def get_xy_data(paths):
     data = []
     for path in paths:
         n_expmt = get_n_expmt(path)
@@ -29,7 +28,13 @@ def reward_plot(paths, case_titles, plot_type='median'):
         for j in range(n_cases):
             y.append(data[i][j][:,1])
         ys.append(y)
+    return xs,ys
 
+
+def reward_plot(paths, case_titles, plot_type='median'):
+    assert plot_type in ['median', 'mean'], 'Invalid plot type. Should be one of these: median, mean.'
+
+    xs, ys = get_xy_data(paths)
 
     if plot_type=='median':
         for x,y in zip(xs,ys):
