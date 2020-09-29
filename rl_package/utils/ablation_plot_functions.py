@@ -53,6 +53,10 @@ def get_reward_array(file_paths):
         reward_array.append(r)
     return reward_array
 
+def get_mean_reward_array(file_paths):
+    reward_array = get_reward_array(file_paths)
+    return np.mean(np.array(reward_array), axis=1 )
+
 def ablation_plot(path, False_cases=['LR annealing', 'grad clip', 'relu', 'orthogonal'], True_cases=['no LR annealing', 'no grad clip', 'tanh', 'xavier']):
     comb_array = list( product([0,1], repeat=len(True_cases)) )
     file_paths = get_file_paths(path, comb_array)
@@ -66,7 +70,7 @@ def ablation_plot(path, False_cases=['LR annealing', 'grad clip', 'relu', 'ortho
         ind = [ bool(comb_array[j][i]) for j in range( len(comb_array) ) ] 
         true_data = reward_array[ind].reshape(-1)
         false_data = reward_array[np.invert(ind)].reshape(-1)
-        axs[i,0].hist((true_data, false_data), bins=20, stacked=True, density=True, color=('grey', 'k'))
+        axs[i,0].hist((true_data, false_data), bins=20, stacked=True, density=True, color=('grey', 'k'),cumulative=-1  )
         axs[i,0].legend([True_cases[i], False_cases[i]])
         axs[i,0].grid('on')
         axs[i,0].set_xlabel('reward')
@@ -90,3 +94,21 @@ def ablation_plot(path, False_cases=['LR annealing', 'grad clip', 'relu', 'ortho
     fig.savefig(path+'/ablation_report_plots.pdf',bbox_inhes='tight' )
     plt.close()
     print('ablation_report_plots.pdf is saved at '+path)
+
+    # plot best test case
+    mean_reward_array = get_mean_reward_array(file_paths)
+    best_results_file_path = file_paths[np.argmax(mean_reward_array)]
+    best_combination = comb_array[np.argmax(mean_reward_array)]
+    xs,ys = get_xy_data([best_results_file_path])
+
+    fig, axs = plt.subplots(1,1, figsize=(10,10))
+    axs.plot(xs[0], np.nanmean(ys[0], axis=0), color='k' )
+    axs.grid('on')
+    axs.set_xlabel('timesteps')
+    axs.set_ylabel('mean reward')
+    cases = np.vstack( (False_cases, True_cases) ) 
+    axs.set_title(best_results_file_path+'\n'+ cases[best_combination[0],0] + '-'  + cases[best_combination[1],1] + '-' + cases[best_combination[2],2] + '-' + cases[best_combination[3],3] )
+
+    fig.savefig(path+'/ablation_best_results_plots.pdf',bbox_inhes='tight' )
+    plt.close()
+    print('ablation_best_results_plots.pdf is saved at '+path)
