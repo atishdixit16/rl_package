@@ -81,7 +81,7 @@ class DQNSolver:
         if self.load_weights:
             self.model.load_weights(self.load_weights_model_path)
         if self.grad_clip:
-            self.model.compile(loss="mse", optimizer=Adam(lr=self.learning_rate, amsgrad=True, clipvalue=10.0))
+            self.model.compile(loss="mse", optimizer=Adam(lr=self.learning_rate, amsgrad=True, clipvalue=0.5))
         else:
             self.model.compile(loss="mse", optimizer=Adam(lr=self.learning_rate, amsgrad=True))
         if self.use_target_network:
