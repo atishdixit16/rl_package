@@ -186,10 +186,10 @@ def ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns,
             optimizer.zero_grad()
             if GRAD_CLIP:
                 nn.utils.clip_grad_value_(model.parameters(), 5)
-            if LR_ANNEAL:
-                scheduler.step()
             loss.backward()
             optimizer.step()
+            if LR_ANNEAL:
+                scheduler.step()
     # print(loss)
 
 
