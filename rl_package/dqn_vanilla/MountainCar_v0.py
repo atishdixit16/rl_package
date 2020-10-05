@@ -1,4 +1,4 @@
-from rl_package.dqn_vanilla.dqn import dqn_algorithm
+from rl_package.dqn_vanilla.dqn_pytorch import dqn_algorithm
 import gym
 
 for i in range(5):
