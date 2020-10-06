@@ -141,7 +141,7 @@ class DQNSolver:
             loss.backward()
             self.optimizer.step()
             if self.lr_anneal:
-                scheduler.step()
+                self.scheduler.step()
         self.loss=loss.detach().numpy()
 
     def eps_timestep_decay(self, t):
