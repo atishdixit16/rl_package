@@ -142,7 +142,7 @@ class DQNSolver:
             self.optimizer.step()
             if self.lr_anneal:
                 self.scheduler.step()
-        self.loss=loss.detach().numpy()
+        self.loss=loss.cpu().detach().numpy()
 
     def eps_timestep_decay(self, t):
         fraction = min (float(t)/int(self.total_timesteps*self.exploration_fraction), 1.0)
