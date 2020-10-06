@@ -79,7 +79,7 @@ class DQNSolver:
         self.gamma = GAMMA
         self.action_space = env.action_space.n
 
-        #self.loss = 1.0
+        self.loss = 1.0
 
     def remember(self, state, action, reward, next_state, done):
         for i in range(state.shape[0]):
