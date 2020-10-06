@@ -93,7 +93,7 @@ class DQNSolver:
             else:
                 s_torch = torch.FloatTensor( s.reshape(1,-1) ).to(self.device)
                 q_values = self.model(s_torch)
-                q_values = q_values.detach().numpy()
+                q_values = q_values.cpu().detach().numpy()
                 actions.append(np.argmax(q_values[0]))
         return actions
 
