@@ -70,8 +70,8 @@ def ablation_plot(path, False_cases=['LR annealing', 'grad clip', 'relu', 'ortho
         ind = [ bool(comb_array[j][i]) for j in range( len(comb_array) ) ] 
         true_data = reward_array[ind].reshape(-1)
         false_data = reward_array[np.invert(ind)].reshape(-1)
-        axs[i,0].hist((true_data, false_data), bins=20, stacked=True, density=True, color=('grey', 'k'),cumulative=-1  )
-        axs[i,0].legend([True_cases[i], False_cases[i]])
+        axs[i,0].hist((false_data, true_data), stacked=True, density=True,cumulative=-1  )
+        axs[i,0].legend([ False_cases[i], True_cases[i] ] )
         axs[i,0].grid('on')
         axs[i,0].set_xlabel('reward')
         axs[i,0].set_ylabel('1 - CDF(reward)')
@@ -85,8 +85,10 @@ def ablation_plot(path, False_cases=['LR annealing', 'grad clip', 'relu', 'ortho
     xs, ys = get_xy_data(effect_file_paths)
 
     for i in range(len(True_cases)):
-        axs[i,1].plot(xs_base[0], np.nanmean(ys_base[0], axis=0), color='k' )
-        axs[i,1].plot(xs[i], np.nanmean(ys[i], axis=0), color='grey' )
+        axs[i,1].plot(xs_base[0], np.nanmedian(ys_base[0], axis=0) )
+        axs[i,1].fill_between(xs_base[0], np.nanpercentile(ys_base[0], 25, axis=0), np.nanpercentile(ys_base[0], 75, axis=0), alpha=0.25)
+        axs[i,1].plot(xs[i], np.nanmedian(ys[i], axis=0) )
+        axs[i,1].fill_between(xs[i], np.nanpercentile(ys[i], 25, axis=0), np.nanpercentile(ys[i], 75, axis=0), alpha=0.25)
         axs[i,1].legend([False_cases[i], True_cases[i]])
         axs[i,1].grid('on')
         axs[i,1].set_xlabel('timesteps')
@@ -102,7 +104,8 @@ def ablation_plot(path, False_cases=['LR annealing', 'grad clip', 'relu', 'ortho
     xs,ys = get_xy_data([best_results_file_path])
 
     fig, axs = plt.subplots(1,1, figsize=(10,10))
-    axs.plot(xs[0], np.nanmean(ys[0], axis=0), color='k' )
+    axs.plot(xs[0], np.nanmedian(ys[0], axis=0) )
+    axs.fill_between(xs[0], np.nanpercentile(ys[0], 25, axis=0), np.nanpercentile(ys[0], 75, axis=0), alpha=0.25)
     axs.grid('on')
     axs.set_xlabel('timesteps')
     axs.set_ylabel('mean reward')

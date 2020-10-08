@@ -1,9 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from unicodedata import normalize
+
 
 def get_n_expmt(path): #get no. of log#.csv files in the directory 
-    dirs = np.array(os.listdir(path))
+    dirs = np.array(os.listdir( str (path) ))
     for i in range(dirs.size):
         dirs[i] = dirs[i][:3]
     n_expmt = len (np.where(dirs=='log')[0] )
