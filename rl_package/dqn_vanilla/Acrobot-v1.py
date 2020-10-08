@@ -6,15 +6,15 @@ for i in range(5):
     print('trial {}'.format(i))
     model = \
     dqn_algorithm(ENV= gym.make('Acrobot-v1'),
-                  NUM_ENV=6,
+                  NUM_ENV=8,
                   SEED=i,
-                  TOTAL_TIMESTEPS = 1000000,
+                  TOTAL_TIMESTEPS = 800000,
                   GAMMA = 0.95,
                   MEMORY_SIZE = 10000,
                   BATCH_SIZE = 128,
                   EXPLORATION_MAX = 1.0,
                   EXPLORATION_MIN = 0.02,
-                  EXPLORATION_FRACTION = 0.6,
+                  EXPLORATION_FRACTION = 0.7,
                   TRAINING_FREQUENCY = 200,
                   FILE_PATH = 'rl_package/dqn_vanilla/Acrobot_results/',
                   SAVE_MODEL = True,

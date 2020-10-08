@@ -137,7 +137,7 @@ class DQNSolver:
             loss = criterion(q_output, q_t.detach())
             self.optimizer.zero_grad()
             if self.grad_clip:
-                nn.utils.clip_grad_value_(model.parameters(), 0.5)
+                nn.utils.clip_grad_value_(self.model.parameters(), 0.5)
             loss.backward()
             self.optimizer.step()
             if self.lr_anneal:
