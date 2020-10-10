@@ -8,7 +8,7 @@ for i in range(5):
     dqn_algorithm(ENV= gym.make('Acrobot-v1'),
                   NUM_ENV=8,
                   SEED=i,
-                  TOTAL_TIMESTEPS = 800000,
+                  TOTAL_TIMESTEPS = 2000000,
                   GAMMA = 0.95,
                   MEMORY_SIZE = 10000,
                   BATCH_SIZE = 128,
@@ -22,12 +22,12 @@ for i in range(5):
                   LOG_FILE_NAME = 'log'+str(i),
                   TIME_FILE_NAME = 'time'+str(i),
                   PRINT_FREQ = 5000,
-                  N_EP_AVG = 100,
+                  N_EP_AVG = 30,
                   VERBOSE = 'True',
-                  MLP_LAYERS = [16,16],
+                  MLP_LAYERS = [64,64],
                   MLP_ACTIVATIONS = ['relu','relu'],
                   LEARNING_RATE = 1e-3,
-                  EPOCHS = 1,
+                  EPOCHS = 25,
                   GRAD_CLIP = False,
                   LR_ANNEAL= True,
                   NN_INIT='orthogonal',
@@ -35,4 +35,4 @@ for i in range(5):
                   USE_TARGET_NETWORK = True,
                   TARGET_UPDATE_FREQUENCY = 1000)
 
-reward_plot( [ 'rl_package/dqn_vanilla/Acrobot_results'], ['DQN Acrobot-v1']  )
+reward_plot( [ 'rl_package/dqn_vanilla/Acrobot_results'], ['DQN Acrobot-v1'], plot_type='mean'  )

@@ -236,6 +236,9 @@ def dqn_algorithm(ENV,
     before = time.time()
     num_envs = NUM_ENV
 
+    assert not PRINT_FREQ % NUM_ENV, 'Invalid print frequency. For convinience, select such that PRINT_FREQ % NUM_ENV = 0'
+    assert not TRAINING_FREQUENCY % NUM_ENV, 'Invalid training frequency. For convinience, select such that TRAINING_FREQUENCY % NUM_ENV = 0'
+
     if TOTAL_TIMESTEPS%NUM_ENV:
         print('Error: total timesteps is not divisible by no. of envs')
         return 
