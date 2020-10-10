@@ -19,10 +19,7 @@ from rl_package.utils.multiprocessing_env import SubprocVecEnv
 class ParallelEnvWrapper():
     '''
     synchronised parallel environment operations
-    returns 'None' states and zero reward when the episode terminates
-    Make sure-
-    1. policy : throws random action when None state is observed
-    2. data gathering : None states data is not recorded for training of RL algorithm
+    step function returns zero reward when the episode terminates in a corresponding env vector
     '''
     def __init__(self,envs):
         self.envs = envs
@@ -34,7 +31,6 @@ class ParallelEnvWrapper():
 
     def step(self,actions):
         s,r,d,i = self.envs.step(actions)
-        s[self.record_done] = None
         r[self.record_done] = 0.0
         self.record_done[d] = True
         if self.record_done.any():

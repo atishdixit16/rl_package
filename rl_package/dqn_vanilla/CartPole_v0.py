@@ -21,7 +21,7 @@ for i in range(5):
                   LOG_FILE_NAME = 'log'+str(i),
                   TIME_FILE_NAME = 'time'+str(i),
                   PRINT_FREQ = 5000,
-                  N_EP_AVG = 100,
+                  N_TEST_ENV = 96, #100,
                   VERBOSE = 'True',
                   MLP_LAYERS = [64,64],
                   MLP_ACTIVATIONS = ['relu','relu'],

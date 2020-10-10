@@ -18,6 +18,7 @@ from collections import OrderedDict
 from rl_package.ppo_vanilla.ppo import get_moduledict
 from rl_package.utils.set_seed import set_seed
 from rl_package.utils.multiprocessing_env import SubprocVecEnv
+from rl_package.utils.ParallelEnvWrapper import ParallelEnvWrapper
 
 
 class QNetwork(nn.Module):
@@ -166,6 +167,23 @@ def test_env(env, model, device, vis=False):
         total_reward += reward
     return total_reward
 
+def test_env_mean_return(envs, model, device, n_trials):
+    num_env = envs.nenvs
+    envs = ParallelEnvWrapper(envs)
+    mean_return = []
+    for _ in range(int(n_trials/num_env)):
+        state = envs.reset()
+        done = [False]*num_env
+        total_reward = [0]*num_env
+        while not np.array(done).all():
+            state = torch.FloatTensor(state).unsqueeze(0)
+            q_values = model(state.to(device))
+            actions = np.argmax(q_values.cpu().detach().numpy()[0] , axis=1) 
+            state, reward, done, _ = envs.step(list(actions))
+            total_reward += reward
+        mean_return.append(np.mean(total_reward))
+    return np.mean(mean_return)
+
 
 def dqn_algorithm(ENV,
                   NUM_ENV=8,
@@ -184,8 +202,8 @@ def dqn_algorithm(ENV,
                   LOG_FILE_NAME = 'log',
                   TIME_FILE_NAME = 'time',
                   PRINT_FREQ = 100,
-                  N_EP_AVG = 100,
-                  TEST_ENV_FUNC = test_env,
+                  N_TEST_ENV = 200,
+                  TEST_ENV_FUNC = test_env_mean_return,
                   VERBOSE = 'False',
                   MLP_LAYERS = [64,64],
                   MLP_ACTIVATIONS = ['relu','relu'],
@@ -236,8 +254,10 @@ def dqn_algorithm(ENV,
     before = time.time()
     num_envs = NUM_ENV
 
+    assert not TOTAL_TIMESTEPS % NUM_ENV, 'Invalid total timesteps. For convinience, select such that TOTAL_TIMESTEPS % NUM_ENV = 0'
     assert not PRINT_FREQ % NUM_ENV, 'Invalid print frequency. For convinience, select such that PRINT_FREQ % NUM_ENV = 0'
     assert not TRAINING_FREQUENCY % NUM_ENV, 'Invalid training frequency. For convinience, select such that TRAINING_FREQUENCY % NUM_ENV = 0'
+    assert not N_TEST_ENV % NUM_ENV, 'Invalid no. of test env samples. For convinience, select such that N_TEST_ENV % NUM_ENV = 0'
 
     if TOTAL_TIMESTEPS%NUM_ENV:
         print('Error: total timesteps is not divisible by no. of envs')
@@ -305,7 +325,7 @@ def dqn_algorithm(ENV,
                 dqn_solver.experience_replay()
             state = state_next
             if (t%PRINT_FREQ==0):
-                test_reward = np.mean([TEST_ENV_FUNC(env, dqn_solver.model, device) for _ in range(N_EP_AVG)])
+                test_reward = TEST_ENV_FUNC(envs, model, device, n_trials=N_TEST_ENV)
                 explore_percent.append(dqn_solver.exploration_rate*100)
                 mean100_rew.append(test_reward)
                 steps.append(t)
@@ -358,7 +378,7 @@ if __name__ == "__main__":
     parser.add_argument('--log_file_name', default='log', help='name of file to store DQN results')
     parser.add_argument('--time_file_name', default='time', help='name of file to store computation time')
     parser.add_argument('--print_frequency',  type=int, default=1000, help='printing with timestep frequency')
-    parser.add_argument('--n_ep_avg',  type=int, default=100, help='no. of episodes to be considered while computing average reward')
+    parser.add_argument('--n_test_env',  type=int, default=200, help='no. of episodes to be considered while computing average reward')
     parser.add_argument('--verbose', type=str2bool, default=True,  help='print episodic results')
     parser.add_argument('--mlp_layers', nargs='+', type=int, default=[64, 64], help='list of neurons in each hodden layer of the DQN network')
     parser.add_argument('--mlp_activations', nargs='+', default=['relu', 'relu'], help='list of activation functions in each hodden layer of the DQN network')
@@ -424,7 +444,7 @@ if __name__ == "__main__":
                   TRAINING_FREQUENCY = args.training_frequency,
                   TARGET_UPDATE_FREQUENCY = args.target_update_frequency,
                   PRINT_FREQ = args.print_frequency,
-                  N_EP_AVG = args.n_ep_avg,
+                  N_TEST_ENV = args.n_test_env,
                   SAVE_MODEL = args.save_model,
                   FILE_PATH = args.output_folder,
                   MODEL_FILE_NAME = args.model_file_name,
