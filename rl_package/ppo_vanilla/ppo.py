@@ -20,6 +20,7 @@ from collections import OrderedDict
 
 from rl_package.utils.set_seed import set_seed
 from rl_package.utils.multiprocessing_env import SubprocVecEnv
+from rl_package.utils.ParallelEnvWrapper import ParallelEnvWrapper
 
 
 def init_weights(m):
@@ -148,6 +149,23 @@ def test_env(env, model, device, vis=False):
         total_reward += reward
     return total_reward
 
+def test_env_mean_return(envs, model, device, n_trials):
+    num_env = envs.nenvs
+    envs = ParallelEnvWrapper(envs)
+    mean_return = []
+    for _ in range(int(n_trials/num_env)):
+        state = envs.reset()
+        done = [False]*num_env
+        total_reward = [0]*num_env
+        while not np.array(done).all():
+            state = torch.FloatTensor(state).unsqueeze(0)
+            dist, _ = model(state.to(device))
+            actions = dist.sample().cpu().numpy()[0]
+            state, reward, done, _ = envs.step(list(actions))
+            total_reward += reward
+        mean_return.append(np.mean(total_reward))
+    return np.mean(mean_return)
+
 
 def compute_gae(next_value, rewards, masks, values, GAMMA, LAMBDA):
     values = values + [next_value]
@@ -199,7 +217,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
                   GAMMA=0.99, LAMBDA=0.95,
                   MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], ACTOR_FINAL_ACTIVATION=None, ACTOR_DIST_LOG_STD=0.0, LEARNING_RATE=1e-3,
                   GRAD_CLIP=False, LR_ANNEAL=False, NN_INIT='normal',
-                  PRINT_FREQ=8000, N_TEST_ENV=50, TEST_ENV_FUNC=test_env,
+                  PRINT_FREQ=8000, N_TEST_ENV=50, TEST_ENV_FUNC=test_env_mean_return,
                   SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_FILE_NAME='model',
                   SEED=4):
 
@@ -305,7 +323,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
 
 
             if not steps % PRINT_FREQ:
-                test_reward = np.mean([TEST_ENV_FUNC(env, model, device) for _ in range(N_TEST_ENV)])
+                test_reward = TEST_ENV_FUNC(envs, model, device, n_trials=N_TEST_ENV)
                 test_rewards.append(test_reward)
                 timesteps.append(steps)
                 print('timestep : {}, reward: {}'.format(steps, round(test_reward)))
