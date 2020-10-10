@@ -10,6 +10,6 @@ if __name__ == "__main__":
                   CLIP_PARAM=0.1, VF_COEF=0.5, ENT_COEF=0.001,
                   GAMMA=0.99, LAMBDA=0.95,
                   MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], LEARNING_RATE=1e-3,
-                  PRINT_FREQ=8000, N_TEST_ENV=100, 
+                  PRINT_FREQ=8000, N_TEST_ENV=96, 
                   SAVE_RESULTS=True, FILE_PATH='pendulum_results/', LOG_FILE_NAME='log'+str(i), SAVE_MODEL=True, MODEL_FILE_NAME='model'+str(i),
                   SEED=i)

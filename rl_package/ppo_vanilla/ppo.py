@@ -217,7 +217,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
                   GAMMA=0.99, LAMBDA=0.95,
                   MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], ACTOR_FINAL_ACTIVATION=None, ACTOR_DIST_LOG_STD=0.0, LEARNING_RATE=1e-3,
                   GRAD_CLIP=False, LR_ANNEAL=False, NN_INIT='normal',
-                  PRINT_FREQ=8000, N_TEST_ENV=50, TEST_ENV_FUNC=test_env_mean_return,
+                  PRINT_FREQ=8000, N_TEST_ENV=48, TEST_ENV_FUNC=test_env_mean_return,
                   SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_FILE_NAME='model',
                   SEED=4):
 
@@ -253,6 +253,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
     set_seed(SEED)
 
     assert not PRINT_FREQ % NUM_ENV, 'Invalid print frequency. For convinience, select such that PRINT_FREQ % NUM_ENV = 0'
+    assert not N_TEST_ENV % NUM_ENV, 'Invalid no of trials for test env. For convinience, select such that N_TEST_ENV % NUM_ENV = 0'
 
     use_cuda = torch.cuda.is_available()
     device   = torch.device("cuda" if use_cuda else "cpu")
@@ -353,5 +354,6 @@ def ppo_algorithm(ENV, NUM_ENV=8,
         return model
 
 if __name__ == "__main__":
+    # an example
     env = gym.make('Pendulum-v0')
     model = ppo_algorithm(env)
