@@ -142,3 +142,13 @@ class ActorCriticDense(nn.Module):
         if self.action_type=='discrete':
             dist = Categorical(probs)
         return dist, value
+
+class QNetwork(nn.Module):
+    def __init__(self, num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT, ACTOR_FINAL_ACTIVATION=None, std=0.0, seed=1):
+        super(QNetwork, self).__init__()
+        set_seed(seed)
+        self.actor = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, 'actor') )  )
+        
+    def forward(self, x):
+        value = self.actor(x)
+        return value
