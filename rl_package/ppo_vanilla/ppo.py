@@ -15,7 +15,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-from torch.distributions import Normal
+from torch.distributions import Normal, Categorical
 from collections import OrderedDict
 
 from rl_package.utils.set_seed import set_seed
@@ -118,21 +118,43 @@ def get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_F
     return module_list
 
 
-class ActorCritic(nn.Module):
-    def __init__(self, num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, std=0.0):
-        super(ActorCritic, self).__init__()
+class ActorCriticDense(nn.Module):
+    def __init__(self, env, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, ACTOR_DIST_LOG_STD =0.0):
+        super(ActorCriticDense, self).__init__()
+        '''
+        env: OpenAI gym formatted RL environemnt
+        MLP_LAYERS : array of neuron layers for ex. [8 , 8] for two layers with 8 neurons, 
+        MLP_ACTIVATIONS : array of activation function for ex. ['relu','relu'] for relu activations for two ayers, 
+        ACTOR_FINAL_ACTIVATION : activation function for final layer of actor network, 
+        ACTOR_DIST_LOG_STD : log standard distribution for action distribution , 
+        NN_INIT = initialization for network for ex.: 'orthogonal', 'xavier'
+        '''
+    
+        num_inputs  = env.observation_space.shape[0]
+        if type(env.action_space)==gym.spaces.box.Box: # continous action
+            self.action_type = 'continous'
+            num_outputs = env.observation_space.shape[0]
+        if type(env.action_space)==gym.spaces.discrete.Discrete: # discrete action
+            self.action_type = 'discrete'
+            num_outputs = env.action_space.n
 
-        self.critic = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, 'critic') )  )
-        self.actor = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, 'actor') ) )
-        self.log_std = nn.Parameter(torch.ones(1, num_outputs) * std)
+        self.critic = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key= 'critic') )  )
+        if self.action_type == 'continous':
+            self.actor = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key='actor') ) )
+            self.log_std = nn.Parameter(torch.ones(1, num_outputs) *  ACTOR_DIST_LOG_STD )
+        if self.action_type == 'discrete':
+            self.actor = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION='sigmoid', NN_INIT=NN_INIT, network_key='actor') ) )
         
         # self.apply(init_weights)
         
     def forward(self, x):
         value = self.critic(x)
         mu    = self.actor(x)
-        std   = self.log_std.exp().expand_as(mu)
-        dist  = Normal(mu, std)
+        if self.action_type=='continous':
+            std   = self.log_std.exp().expand_as(mu)
+            dist  = Normal(mu, std )
+        if self.action_type=='discrete':
+            dist = Categorical(probs)
         return dist, value
 
 def test_env(env, model, device, vis=False):
@@ -211,12 +233,12 @@ def ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns,
     # print(loss)
 
 
-def ppo_algorithm(ENV, NUM_ENV=8,
+def ppo_algorithm(ENV, MODEL,
+                  NUM_ENV=8,
                   TOTAL_STEPS=200000, NSTEPS=64, MINIBATCH_SIZE=128, N_EPOCH=30,
                   CLIP_PARAM=0.1, VF_COEF=0.5, ENT_COEF=0.001,
                   GAMMA=0.99, LAMBDA=0.95,
-                  MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], ACTOR_FINAL_ACTIVATION=None, ACTOR_DIST_LOG_STD=0.0, LEARNING_RATE=1e-3,
-                  GRAD_CLIP=False, LR_ANNEAL=False, NN_INIT='normal',
+                  LEARNING_RATE=1e-3, GRAD_CLIP=False, LR_ANNEAL=False, NN_INIT='normal',
                   PRINT_FREQ=8000, N_TEST_ENV=48, TEST_ENV_FUNC=test_env_mean_return,
                   SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_FILE_NAME='model',
                   SEED=4):
@@ -234,13 +256,9 @@ def ppo_algorithm(ENV, NUM_ENV=8,
         ENT_COEF : entropy coefficient,
         GAMMA : dicount factor, 
         LAMBDA : lambda return term for genaralized advantage estimator,
-        MLP_LAYERS : array of neuron layers for ex. [8 , 8] for two layers with 8 neurons, 
-        MLP_ACTIVATIONS : array of activation function for ex. ['relu','relu'] for relu activations for two ayers, 
-        ACTOR_FINAL_ACTIVATION : activation function for final layer of actor network, 
-        ACTOR_DIST_LOG_STD : log standard distribution for action distribution , 
         LEARNING_RATE : learning rate for Adam ,
         PRINT_FREQ : print frequeny for no. of steps, 
-        N_TEST_ENV : number for test env averaging, 
+        N_TEST_ENV : number for test env samples for averaging, 
         TEST_ENV_FUNC : function to test environment with the model,
         SAVE_RESULTS : boolean to specify whether to save results, 
         FILE_PATH : file path to save reults, 
@@ -272,9 +290,6 @@ def ppo_algorithm(ENV, NUM_ENV=8,
     envs = [make_env() for i in range(num_envs)]
     envs = SubprocVecEnv(envs)
 
-    num_inputs  = envs.observation_space.shape[0]
-    num_outputs = envs.action_space.shape[0]
-
     #Hyper params:
     lr               = LEARNING_RATE
     num_steps        = NSTEPS
@@ -285,7 +300,7 @@ def ppo_algorithm(ENV, NUM_ENV=8,
     timesteps = []
     test_rewards = []
 
-    model = ActorCritic(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, std=ACTOR_DIST_LOG_STD).to(device)
+    model = MODEL.to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr)
     lam = lambda steps: 1-steps/total_steps
     scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lam)
@@ -356,4 +371,5 @@ def ppo_algorithm(ENV, NUM_ENV=8,
 if __name__ == "__main__":
     # an example
     env = gym.make('Pendulum-v0')
-    model = ppo_algorithm(env)
+    model = ActorCriticDense(env, MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], ACTOR_FINAL_ACTIVATION=None, NN_INIT='orthogonal', ACTOR_DIST_LOG_STD=0.0)
+    model_output = ppo_algorithm(env, model)
