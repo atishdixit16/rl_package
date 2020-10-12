@@ -1,10 +1,13 @@
-from rl_package.dqn_vanilla.dqn_pytorch import dqn_algorithm
+from rl_package.dqn_vanilla.dqn import dqn_algorithm
+from rl_package.utils.standard_nn_architectures import QNetworkDense
 import gym
 
 for i in range(5):
     print('trial: {}'.format(i))
-    model = \
-    dqn_algorithm(ENV= gym.make('MountainCar-v0'),
+    env = gym.make('MountainCar-v0')
+    model =  QNetworkDense(env, MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['tanh','tanh'], NN_INIT='orthogonal', seed=i)
+    model_output = \
+    dqn_algorithm(ENV= env, MODEL=model,
                   NUM_ENV=8,
                   SEED=i,
                   TOTAL_TIMESTEPS = 200000,
@@ -21,15 +24,11 @@ for i in range(5):
                   LOG_FILE_NAME = 'log'+str(i),
                   TIME_FILE_NAME = 'time'+str(i),
                   PRINT_FREQ = 1000,
-                  N_EP_AVG = 100,
+                  N_TEST_ENV=96,
                   VERBOSE = 'True',
-                  MLP_LAYERS = [64,64],
-                  MLP_ACTIVATIONS = ['tanh','tanh'],
                   LEARNING_RATE = 1e-4,
                   EPOCHS = 1,
                   GRAD_CLIP = False,
                   DOUBLE_DQN = False,
                   USE_TARGET_NETWORK = True,
-                  TARGET_UPDATE_FREQUENCY = 200,
-                  LOAD_WEIGHTS = False,
-                  LOAD_WEIGHTS_MODEL_PATH = 'CartPole-v0/results/model'+str(i)+'.h5')
+                  TARGET_UPDATE_FREQUENCY = 200)
