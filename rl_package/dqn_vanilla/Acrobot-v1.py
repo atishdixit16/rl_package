@@ -6,7 +6,7 @@ for i in range(5):
     print('trial {}'.format(i))
     model = \
     dqn_algorithm(ENV= gym.make('Acrobot-v1'),
-                  NUM_ENV=8,
+                  NUM_ENV=64,
                   SEED=i,
                   TOTAL_TIMESTEPS = 2000000,
                   GAMMA = 0.95,
@@ -15,14 +15,14 @@ for i in range(5):
                   EXPLORATION_MAX = 1.0,
                   EXPLORATION_MIN = 0.02,
                   EXPLORATION_FRACTION = 0.7,
-                  TRAINING_FREQUENCY = 200,
+                  TRAINING_FREQUENCY = 256,
                   FILE_PATH = 'rl_package/dqn_vanilla/Acrobot_results/',
                   SAVE_MODEL = True,
                   MODEL_FILE_NAME = 'model'+str(i),
                   LOG_FILE_NAME = 'log'+str(i),
                   TIME_FILE_NAME = 'time'+str(i),
-                  PRINT_FREQ = 5000,
-                  N_TEST_ENV = 32,
+                  PRINT_FREQ = 6400,
+                  N_TEST_ENV = 64,
                   VERBOSE = 'True',
                   MLP_LAYERS = [64,64],
                   MLP_ACTIVATIONS = ['relu','relu'],
@@ -33,6 +33,6 @@ for i in range(5):
                   NN_INIT='orthogonal',
                   DOUBLE_DQN = False,
                   USE_TARGET_NETWORK = True,
-                  TARGET_UPDATE_FREQUENCY = 1000)
+                  TARGET_UPDATE_FREQUENCY = 2560)
 
 reward_plot( [ 'rl_package/dqn_vanilla/Acrobot_results'], ['DQN Acrobot-v1'], plot_type='mean'  )

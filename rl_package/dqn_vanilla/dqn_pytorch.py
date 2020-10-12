@@ -193,7 +193,7 @@ def dqn_algorithm(ENV, NUM_ENV=8,
                   MLP_LAYERS = [64,64], MLP_ACTIVATIONS = ['relu','relu'], NN_INIT = 'orthogonal', LEARNING_RATE = 1e-3,  EPOCHS = 1,
                   GRAD_CLIP = False, LR_ANNEAL = False,
                   VERBOSE = 'False', FILE_PATH = 'results/', SAVE_MODEL = False, PRINT_FREQ = 100,
-                  MODEL_FILE_NAME = 'model', LOG_FILE_NAME = 'log', TIME_FILE_NAME = 'time'
+                  MODEL_FILE_NAME = 'model', LOG_FILE_NAME = 'log', TIME_FILE_NAME = 'time',
                   SEED=1):
 
     '''
