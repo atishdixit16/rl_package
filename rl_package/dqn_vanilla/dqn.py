@@ -11,12 +11,9 @@ import gym
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
-from torch.distributions import Normal
-from collections import OrderedDict
 
 from rl_package.utils.set_seed import set_seed
-from rl_package.utils.standard_nn_architectures import QNetwork
+from rl_package.utils.standard_nn_architectures import QNetworkDense
 from rl_package.utils.multiprocessing_env import SubprocVecEnv
 from rl_package.utils.ParallelEnvWrapper import ParallelEnvWrapper
 
@@ -244,14 +241,11 @@ def dqn_algorithm(ENV, NUM_ENV=8,
     t = 0
     explore_percent, mean100_rew, steps, NN_tr_loss = [],[],[],[]
 
-    observation_space = envs.observation_space.shape[0]
-    action_space = envs.action_space.n
-
     use_cuda = torch.cuda.is_available()
     device   = torch.device("cuda" if use_cuda else "cpu")
 
-    model = QNetwork(observation_space, action_space, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT).to(device)
-    target_model = QNetwork(observation_space, action_space, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT).to(device)
+    model = QNetworkDense(env, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT).to(device)
+    target_model = QNetworkDense(env, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT).to(device)
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     lam = lambda steps: 1-t/TOTAL_TIMESTEPS
     scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lam)

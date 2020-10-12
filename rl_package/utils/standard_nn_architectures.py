@@ -143,10 +143,13 @@ class ActorCriticDense(nn.Module):
             dist = Categorical(probs)
         return dist, value
 
-class QNetwork(nn.Module):
-    def __init__(self, num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT, ACTOR_FINAL_ACTIVATION=None, std=0.0, seed=1):
-        super(QNetwork, self).__init__()
+class QNetworkDense(nn.Module):
+    def __init__(self, env, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT, ACTOR_FINAL_ACTIVATION=None, std=0.0, seed=1):
+        super(QNetworkDense, self).__init__()
         set_seed(seed)
+        num_inputs = env.observation_space.shape[0]
+        num_outputs = env.action_space.n
+
         self.actor = nn.Sequential ( OrderedDict (get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, 'actor') )  )
         
     def forward(self, x):
