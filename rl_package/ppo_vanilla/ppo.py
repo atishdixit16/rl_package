@@ -119,7 +119,7 @@ def get_moduledict(num_inputs, num_outputs, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_F
 
 
 class ActorCriticDense(nn.Module):
-    def __init__(self, env, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, ACTOR_DIST_LOG_STD =0.0):
+    def __init__(self, env, MLP_LAYERS, MLP_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, NN_INIT, ACTOR_DIST_LOG_STD =0.0, seed=1):
         super(ActorCriticDense, self).__init__()
         '''
         env: OpenAI gym formatted RL environemnt
@@ -129,7 +129,7 @@ class ActorCriticDense(nn.Module):
         ACTOR_DIST_LOG_STD : log standard distribution for action distribution , 
         NN_INIT = initialization for network for ex.: 'orthogonal', 'xavier'
         '''
-    
+        set_seed(seed) # for reproducibility
         num_inputs  = env.observation_space.shape[0]
         if type(env.action_space)==gym.spaces.box.Box: # continous action
             self.action_type = 'continous'
