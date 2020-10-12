@@ -1,19 +1,16 @@
 import random
 import numpy as np
 import os
-from collections import deque
-from tqdm import trange
 import time
+from collections import deque
 import argparse
-
-import gym
+import copy
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
 from rl_package.utils.set_seed import set_seed
-from rl_package.utils.standard_nn_architectures import QNetworkDense
 from rl_package.utils.multiprocessing_env import SubprocVecEnv
 from rl_package.utils.ParallelEnvWrapper import ParallelEnvWrapper
 
@@ -164,12 +161,12 @@ def test_env_mean_return(envs, model, device, n_trials):
     return np.mean(mean_return)
 
 
-def dqn_algorithm(ENV, NUM_ENV=8,
+def dqn_algorithm(ENV, MODEL, NUM_ENV=8,
                   TOTAL_TIMESTEPS = 100000, GAMMA = 0.95, MEMORY_SIZE = 1000, BATCH_SIZE = 32,
                   EXPLORATION_MAX = 1.0, EXPLORATION_MIN = 0.02, EXPLORATION_FRACTION = 0.7,
                   TRAINING_FREQUENCY = 1000, DOUBLE_DQN = False, USE_TARGET_NETWORK = True, TARGET_UPDATE_FREQUENCY = 5000,
                   N_TEST_ENV = 200, TEST_ENV_FUNC = test_env_mean_return,
-                  MLP_LAYERS = [64,64], MLP_ACTIVATIONS = ['relu','relu'], NN_INIT = 'orthogonal', LEARNING_RATE = 1e-3,  EPOCHS = 1,
+                  LEARNING_RATE = 1e-3,  EPOCHS = 1,
                   GRAD_CLIP = False, LR_ANNEAL = False,
                   VERBOSE = 'False', FILE_PATH = 'results/', SAVE_MODEL = False, PRINT_FREQ = 100,
                   MODEL_FILE_NAME = 'model', LOG_FILE_NAME = 'log', TIME_FILE_NAME = 'time',
@@ -196,9 +193,6 @@ def dqn_algorithm(ENV, NUM_ENV=8,
     print_frequency : results printing episodic frequency 
     n_ep_avg : no. of episodes to be considered while computing average reward 
     verbose : print episodic results 
-    mlp_layers : list of neurons in each hodden layer of the DQN network 
-    mlp_activations : list of activation functions in each hodden layer of the DQN network
-    nn_init : initialization for neural letwork: orthogonal, xavier etc. 
     learning_rate : learning rate for the neural network 
     epochs : no. of epochs in every experience replay 
     grad_clip : boolean to specify whether to use gradient clipping in the optimizer (graclip value 0.5) 
@@ -244,8 +238,8 @@ def dqn_algorithm(ENV, NUM_ENV=8,
     use_cuda = torch.cuda.is_available()
     device   = torch.device("cuda" if use_cuda else "cpu")
 
-    model = QNetworkDense(env, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT).to(device)
-    target_model = QNetworkDense(env, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT).to(device)
+    model = MODEL.to(device)
+    target_model = copy.deepcopy(model).to(device)
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     lam = lambda steps: 1-t/TOTAL_TIMESTEPS
     scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lam)
@@ -315,6 +309,10 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 if __name__ == "__main__":
+
+    import gym
+    from rl_package.utils.standard_nn_architectures import QNetworkDense
+
 
     parser = argparse.ArgumentParser()
 
@@ -389,8 +387,9 @@ if __name__ == "__main__":
     '''
 
     env = gym.make('CartPole-v0')
-    model = \
-    dqn_algorithm(ENV=env, NUM_ENV=args.num_env,
+    model = QNetworkDense(env, MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu','relu'], NN_INIT='orthogonal')
+    model_output = \
+    dqn_algorithm(ENV=env, MODEL=model, NUM_ENV=args.num_env,
                   SEED=args.seed,
                   GAMMA = args.gamma,
                   TOTAL_TIMESTEPS = args.total_timesteps, MEMORY_SIZE = args.buffer_size, BATCH_SIZE = args.batch_size,
@@ -406,9 +405,6 @@ if __name__ == "__main__":
                   EPOCHS = args.epochs,
                   GRAD_CLIP = args.grad_clip,
                   LR_ANNEAL= args.lr_anneal,
-                  MLP_LAYERS = args.mlp_layers,
-                  MLP_ACTIVATIONS = args.mlp_activations,
-                  NN_INIT= args.nn_init,
                   DOUBLE_DQN = args.double_dqn,
                   LEARNING_RATE = args.learning_rate,
                   EXPLORATION_MAX = args.exploration_max,

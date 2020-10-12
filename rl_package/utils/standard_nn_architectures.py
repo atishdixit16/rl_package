@@ -145,6 +145,11 @@ class ActorCriticDense(nn.Module):
 
 class QNetworkDense(nn.Module):
     def __init__(self, env, MLP_LAYERS, MLP_ACTIVATIONS, NN_INIT, ACTOR_FINAL_ACTIVATION=None, std=0.0, seed=1):
+        '''
+        mlp_layers : list of neurons in each hodden layer of the DQN network 
+        mlp_activations : list of activation functions in each hodden layer of the DQN network
+        nn_init : initialization for neural letwork: orthogonal, xavier etc. 
+        '''
         super(QNetworkDense, self).__init__()
         set_seed(seed)
         num_inputs = env.observation_space.shape[0]
