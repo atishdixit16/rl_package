@@ -1,5 +1,5 @@
 from rl_package.ppo_vanilla.ppo import ppo_algorithm
-from rl_package.ppo_vanilla.ppo import ActorCriticDense
+from rl_package.utils.standard_nn_architectures import ActorCriticDense
 import gym
 
 if __name__ == "__main__":
