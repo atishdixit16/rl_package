@@ -50,50 +50,65 @@ class DQNSolver:
         self.grad_clip = GRAD_CLIP
         self.lr_anneal = LR_ANNEAL
         self.double_dqn =  DOUBLE_DQN
-        self.memory = deque(maxlen=MEMORY_SIZE)
         self.total_timesteps = TOTAL_TIMESTEPS
         self.batch_size = BATCH_SIZE
         self.gamma = GAMMA
         self.action_space = env.action_space.n
-
         self.loss = 1.0
 
-    def remember(self, state, action, reward, next_state, done):
+        self.create_memoery_buffer(memory_size=MEMORY_SIZE)
+
+    def create_memoery_buffer(self, memory_size):
+        self.states = deque(maxlen=memory_size)
+        self.actions = deque(maxlen=memory_size)
+        self.rewards = deque(maxlen=memory_size)
+        self.next_states = deque(maxlen=memory_size)
+        self.dones = deque(maxlen=memory_size)
+
+    def append_memory_buffer(self, state, action, reward, next_state, done):
         for st,act,rew,n_st,dn in zip(state, action, reward, next_state, done):
-            self.memory.append((st, act, rew, n_st, dn))
+            self.states.append(st)
+            self.actions.append(act)
+            self.rewards.append(rew)
+            self.next_states.append(n_st)
+            self.dones.append(dn)
+
+    def sample_batch(self, batch_size):
+        memory_len = len(self.states)
+        indices = random.sample(range(memory_len), batch_size)
+        state_list = [ self.states[i] for i in indices ]
+        action_list = [ self.actions[i] for i in indices ]
+        reward_list = [ self.rewards[i] for i in indices ]
+        next_state_list = [self.next_states[i] for i in indices]
+        done_list = [self.dones[i] for i in indices]
+
+        return state_list, action_list, reward_list, next_state_list, done_list
+
+
+    def remember(self, state, action, reward, next_state, done):
+        self.append_memory_buffer( state, action, reward, next_state, done)
 
     def act(self, state):
-        actions = []
-        for s in state:
+        state = torch.FloatTensor(state).to(self.device)
+        q_values = self.model(state)
+        q_values = q_values.cpu().detach().numpy()
+        actions = np.argmax(q_values, axis=1) # deterministic actions
+        for i in range(actions.shape[0]):
             if random.random() < self.exploration_rate:
-                actions.append(random.randrange(self.action_space))
-            else:
-                s_torch = torch.FloatTensor( s.reshape(1,-1) ).to(self.device)
-                q_values = self.model(s_torch)
-                q_values = q_values.cpu().detach().numpy()
-                actions.append(np.argmax(q_values[0]))
+                actions[i] = random.randrange(self.action_space) #stochastic actions
         return actions
 
     def experience_replay(self):
-        if len(self.memory) < self.batch_size:
+        if len(self.states) < self.batch_size:
             return
         ### new code for network training
-        batch = random.sample(self.memory, self.batch_size)
-        print(batch)
-        state_dim = batch[0][0].shape[0] 
-        state_np, state_next_np = np.empty((self.batch_size,state_dim)), np.empty((self.batch_size,state_dim))
-        reward_np, action_np, done_np = np.empty(self.batch_size), np.empty(self.batch_size), np.empty(self.batch_size)
-        for i in range(self.batch_size):
-            state_np[i] = (batch[i][0])
-            state_next_np[i] = (batch[i][3])
-            action_np[i] = (batch[i][1])
-            reward_np[i] = (batch[i][2])
-            done_np[i] = (batch[i][4])
-        state = torch.FloatTensor(state_np).to(self.device)
-        state_next = torch.FloatTensor(state_next_np).to(self.device)
-        action = torch.FloatTensor(action_np).to(self.device)
-        reward = torch.FloatTensor(reward_np).to(self.device)
-        done = torch.FloatTensor(done_np).to(self.device)
+        state, action, reward, state_next, done = self.sample_batch(batch_size=self.batch_size)
+
+        state = torch.FloatTensor(state).to(self.device)
+        state_next = torch.FloatTensor(state_next).to(self.device)
+        action = torch.FloatTensor(action).to(self.device)
+        reward = torch.FloatTensor(reward).to(self.device)
+        done = torch.FloatTensor(done).to(self.device)
 
         q_t = self.model(state)
         if self.use_target_network:
