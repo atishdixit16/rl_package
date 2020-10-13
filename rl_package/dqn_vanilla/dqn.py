@@ -79,6 +79,7 @@ class DQNSolver:
             return
         ### new code for network training
         batch = random.sample(self.memory, self.batch_size)
+        print(batch)
         state_dim = batch[0][0].shape[0] 
         state_np, state_next_np = np.empty((self.batch_size,state_dim)), np.empty((self.batch_size,state_dim))
         reward_np, action_np, done_np = np.empty(self.batch_size), np.empty(self.batch_size), np.empty(self.batch_size)
@@ -88,28 +89,28 @@ class DQNSolver:
             action_np[i] = (batch[i][1])
             reward_np[i] = (batch[i][2])
             done_np[i] = (batch[i][4])
-        state_np = torch.FloatTensor(state_np).to(self.device)
-        state_next_np = torch.FloatTensor(state_next_np).to(self.device)
-        action_np = torch.FloatTensor(action_np).to(self.device)
-        reward_np = torch.FloatTensor(reward_np).to(self.device)
-        done_np = torch.FloatTensor(done_np).to(self.device)
+        state = torch.FloatTensor(state_np).to(self.device)
+        state_next = torch.FloatTensor(state_next_np).to(self.device)
+        action = torch.FloatTensor(action_np).to(self.device)
+        reward = torch.FloatTensor(reward_np).to(self.device)
+        done = torch.FloatTensor(done_np).to(self.device)
 
-        q_t = self.model(state_np)
+        q_t = self.model(state)
         if self.use_target_network:
-            q_t1 = self.target_model(state_next_np)
+            q_t1 = self.target_model(state_next)
         else:
-            q_t1 = self.model(state_next_np)
+            q_t1 = self.model(state_next)
         q_t1_best = torch.max(q_t1, dim=1)[0]
         if self.double_dqn and self.use_target_network:
-            q_t1_local = self.model(state_next_np)
+            q_t1_local = self.model(state_next)
             ind = np.argmax(q_t1_local, axis=1)
         for i in range(self.batch_size):
             if self.double_dqn and self.use_target_network:
                 q_t1_best[i] = q_t1[i,ind[i]]
-            q_t[i,int(action_np[i])] = reward_np[i] + self.gamma*(1-done_np[i])*q_t1_best[i]
+            q_t[i,int(action[i])] = reward[i] + self.gamma*(1-done[i])*q_t1_best[i]
         # train the DQN network
         for _ in range(self.epochs):
-            q_output = self.model(state_np)
+            q_output = self.model(state)
             criterion = nn.MSELoss()
             loss = criterion(q_output, q_t.detach())
             self.optimizer.zero_grad()
