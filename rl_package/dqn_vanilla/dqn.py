@@ -59,8 +59,8 @@ class DQNSolver:
         self.loss = 1.0
 
     def remember(self, state, action, reward, next_state, done):
-        for i in range(state.shape[0]):
-            self.memory.append((state[i], action[i], reward[i], next_state[i], done[i]))
+        for st,act,rew,n_st,dn in zip(state, action, reward, next_state, done):
+            self.memory.append((st, act, rew, n_st, dn))
 
     def act(self, state):
         actions = []
