@@ -141,6 +141,28 @@ class ScaledFloatFrame(gym.ObservationWrapper):
     def observation(self, obs):
         return np.array(obs).astype(np.float32) / 255.0
 
+
+class ParallelEnvWrapper():
+    '''
+    synchronised parallel environment operations
+    step function returns zero reward when the episode terminates in a corresponding env vector
+    '''
+    def __init__(self,envs):
+        self.envs = envs
+        self.record_done = np.array([False]*self.envs.nenvs)
+
+    def reset(self):
+        self.record_done = np.array([False]*self.envs.nenvs)
+        return self.envs.reset()
+
+    def step(self,actions):
+        s,r,d,i = self.envs.step(actions)
+        r[self.record_done] = 0.0
+        self.record_done[d] = True
+        if self.record_done.any():
+            return s,r,self.record_done,i
+        return s,r,d,i
+
 # example 
 if __name__ == "__main__":
     def make_env(env_name):

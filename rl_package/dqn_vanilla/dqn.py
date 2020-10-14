@@ -12,7 +12,7 @@ import torch.optim as optim
 
 from rl_package.utils.set_seed import set_seed
 from rl_package.utils.multiprocessing_env import SubprocVecEnv
-from rl_package.utils.ParallelEnvWrapper import ParallelEnvWrapper
+from rl_package.utils.env_wrappers import ParallelEnvWrapper
 
 
 class DQNSolver:
