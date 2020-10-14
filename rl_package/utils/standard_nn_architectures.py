@@ -161,9 +161,9 @@ class QNetworkDense(nn.Module):
         value = self.actor(x)
         return value
 
-def get_moduledict_cnn(num_inputs, num_outputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_KERNEL_SIZES, CNN_STRIDES, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key):
+def get_moduledict_cnn(num_inputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_KERNEL_SIZES, CNN_STRIDES, NN_INIT):
     module_list = {}
-    for layer, activation, kernel_size, stride, i in zip( CNN_LAYERS, CNN_ACTIVATIONS, CNN_KERNEL_SIZES, CNN_STRIDES,range(len(MLP_LAYERS)) ):
+    for layer, activation, kernel_size, stride, i in zip( CNN_LAYERS, CNN_ACTIVATIONS, CNN_KERNEL_SIZES, CNN_STRIDES,range(len(CNN_LAYERS)) ):
         if i==0:
             module_list['layer '+str(i)] = nn.Conv2d(num_inputs, layer, kernel_size=kernel_size, stride=stride)
             initialize_weights( module_list['layer '+str(i)] , NN_INIT)
@@ -174,18 +174,24 @@ def get_moduledict_cnn(num_inputs, num_outputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN
             initialize_weights( module_list['layer '+str(i)] , NN_INIT)
             module_list['layer '+str(i)+' act'] = get_activation(activation)
             last_layer = layer
+
+    return module_list
+
+
+def get_moduledict_fc(num_inputs, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key):
+    module_list = {}
     if network_key=='actor':
-        module_list['layer '+str(i+1)] = nn.Linear(last_layer, 512)
-        initialize_weights( module_list['layer '+str(i+1)] , NN_INIT, scale=1.0)
-        module_list['layer '+str(i+2)] = nn.ReLU()
-        module_list['layer '+str(i+3)] = nn.Linear(512, num_outputs)
-        initialize_weights( module_list['layer '+str(i+3)] , NN_INIT, scale=1.0)
+        module_list['layer 0'] = nn.Linear(num_inputs, 512)
+        initialize_weights( module_list['layer 0'] , NN_INIT, scale=1.0)
+        module_list['layer 1'] = nn.ReLU()
+        module_list['layer 2'] = nn.Linear(512, num_outputs)
+        initialize_weights( module_list['layer 2'] , NN_INIT, scale=1.0)
     elif network_key=='critic':
-        module_list['layer '+str(i+1)] = nn.Linear(last_layer, 512)
-        initialize_weights( module_list['layer '+str(i+1)] , NN_INIT, scale=1.0)
-        module_list['layer '+str(i+2)] = nn.ReLU()
-        module_list['layer '+str(i+3)] = nn.Linear(512, 1)
-        initialize_weights( module_list['layer '+str(i+3)] , NN_INIT, scale=1.0)
+        module_list['layer 0'] = nn.Linear(num_inputs, 512)
+        initialize_weights( module_list['layer 0'] , NN_INIT, scale=1.0)
+        module_list['layer 1'] = nn.ReLU()
+        module_list['layer 2'] = nn.Linear(512, 1)
+        initialize_weights( module_list['layer 2'] , NN_INIT, scale=1.0)
     else:
         raise Exception('invalid network key. should be one of these: actor or critic')
     
@@ -203,13 +209,22 @@ class QNetworkCNN(nn.Module):
         mlp_activations : list of activation functions in each hodden layer of the DQN network
         nn_init : initialization for neural letwork: orthogonal, xavier etc. 
         '''
-        super(QNetworkDense, self).__init__()
+        super(QNetworkCNN, self).__init__()
         set_seed(seed)
         num_inputs = env.observation_space.shape[0]
         num_outputs = env.action_space.n
 
-        self.actor = nn.Sequential ( get_moduledict_cnn(num_inputs, num_outputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_KERNEL_SIZES, CNN_STRIDES, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key='actor') )
+
+        self.actor_cnn = nn.Sequential ( OrderedDict(get_moduledict_cnn(num_inputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_KERNEL_SIZES, CNN_STRIDES, NN_INIT)))
+        conv_out_size = self._get_conv_out(env.observation_space.shape)
+        self.fc_network = nn.Sequential ( OrderedDict(get_moduledict_fc(conv_out_size, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key='actor')))
+
+    def _get_conv_out(self, shape):
+        o = self.actor_cnn(torch.zeros(1, *shape))
+        return int(np.prod(o.size()))
+
+    
         
     def forward(self, x):
-        value = self.actor(x)
-        return value
+        conv_out = self.actor_cnn(x).view(x.size()[0], -1)
+        return self.fc_network(conv_out)
