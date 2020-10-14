@@ -160,3 +160,56 @@ class QNetworkDense(nn.Module):
     def forward(self, x):
         value = self.actor(x)
         return value
+
+def get_moduledict_cnn(num_inputs, num_outputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_KERNEL_SIZES, CNN_STRIDES, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key):
+    module_list = {}
+    for layer, activation, kernel_size, stride, i in zip( CNN_LAYERS, CNN_ACTIVATIONS, CNN_KERNEL_SIZES, CNN_STRIDES,range(len(MLP_LAYERS)) ):
+        if i==0:
+            module_list['layer '+str(i)] = nn.Conv2d(num_inputs, layer, kernel_size=kernel_size, stride=stride)
+            initialize_weights( module_list['layer '+str(i)] , NN_INIT)
+            module_list['layer '+str(i)+' act'] = get_activation(activation)
+            last_layer = layer
+        else:
+            module_list['layer '+str(i)] = nn.Conv2d(last_layer, layer, kernel_size=kernel_size, stride=stride)
+            initialize_weights( module_list['layer '+str(i)] , NN_INIT)
+            module_list['layer '+str(i)+' act'] = get_activation(activation)
+            last_layer = layer
+    if network_key=='actor':
+        module_list['layer '+str(i+1)] = nn.Linear(last_layer, 512)
+        initialize_weights( module_list['layer '+str(i+1)] , NN_INIT, scale=1.0)
+        module_list['layer '+str(i+2)] = nn.ReLU()
+        module_list['layer '+str(i+3)] = nn.Linear(512, num_outputs)
+        initialize_weights( module_list['layer '+str(i+3)] , NN_INIT, scale=1.0)
+    elif network_key=='critic':
+        module_list['layer '+str(i+1)] = nn.Linear(last_layer, 512)
+        initialize_weights( module_list['layer '+str(i+1)] , NN_INIT, scale=1.0)
+        module_list['layer '+str(i+2)] = nn.ReLU()
+        module_list['layer '+str(i+3)] = nn.Linear(512, 1)
+        initialize_weights( module_list['layer '+str(i+3)] , NN_INIT, scale=1.0)
+    else:
+        raise Exception('invalid network key. should be one of these: actor or critic')
+    
+    if network_key=='actor':
+        if ACTOR_FINAL_ACTIVATION is not None:
+            module_list['final layer act']=get_activation(ACTOR_FINAL_ACTIVATION)
+
+    return module_list
+
+
+class QNetworkCNN(nn.Module):
+    def __init__(self, env, CNN_LAYERS=[32, 64, 64], CNN_KERNEL_SIZES=[8,4,3], CNN_STRIDES=[4,2,1], CNN_ACTIVATIONS=['relu', 'relu', 'relu'],NN_INIT='xavier', ACTOR_FINAL_ACTIVATION=None, std=0.0, seed=1):
+        '''
+        mlp_layers : list of neurons in each hodden layer of the DQN network 
+        mlp_activations : list of activation functions in each hodden layer of the DQN network
+        nn_init : initialization for neural letwork: orthogonal, xavier etc. 
+        '''
+        super(QNetworkDense, self).__init__()
+        set_seed(seed)
+        num_inputs = env.observation_space.shape[0]
+        num_outputs = env.action_space.n
+
+        self.actor = nn.Sequential ( get_moduledict_cnn(num_inputs, num_outputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_KERNEL_SIZES, CNN_STRIDES, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key='actor') )
+        
+    def forward(self, x):
+        value = self.actor(x)
+        return value
