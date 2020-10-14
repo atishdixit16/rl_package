@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from unicodedata import normalize
 
 
 def get_n_expmt(path): #get no. of log#.csv files in the directory 
