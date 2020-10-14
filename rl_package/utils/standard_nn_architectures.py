@@ -119,7 +119,7 @@ class ActorCriticDense(nn.Module):
         num_inputs  = env.observation_space.shape[0]
         if type(env.action_space)==gym.spaces.box.Box: # continous action
             self.action_type = 'continous'
-            num_outputs = env.observation_space.shape[0]
+            num_outputs = env.action_space.shape[0]
         if type(env.action_space)==gym.spaces.discrete.Discrete: # discrete action
             self.action_type = 'discrete'
             num_outputs = env.action_space.n
@@ -140,7 +140,7 @@ class ActorCriticDense(nn.Module):
             std   = self.log_std.exp().expand_as(mu)
             dist  = Normal(mu, std )
         if self.action_type=='discrete':
-            dist = Categorical(probs)
+            dist = Categorical(mu)
         return dist, value
 
 class QNetworkDense(nn.Module):

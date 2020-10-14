@@ -65,7 +65,7 @@ def ppo_iter(mini_batch_size, states, actions, log_probs, returns, advantage):
     ids = np.random.permutation(batch_size)
     ids = np.split(ids[:batch_size // mini_batch_size * mini_batch_size], batch_size // mini_batch_size)
     for i in range(len(ids)):
-        yield states[ids[i], :], actions[ids[i], :], log_probs[ids[i], :], returns[ids[i], :], advantage[ids[i], :]        
+        yield states[ids[i]], actions[ids[i]], log_probs[ids[i]], returns[ids[i]], advantage[ids[i]]        
 
 def ppo_update(ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantages, model, optimizer, scheduler, CLIP_PARAM, VF_COEF, ENT_COEF, GRAD_CLIP, LR_ANNEAL  ):
     for _ in range(ppo_epochs):
@@ -190,6 +190,7 @@ def ppo_algorithm(ENV, MODEL,
             masks.append(torch.FloatTensor(1 - done).unsqueeze(1).to(device))
 
             states.append(state)
+            # action = action.reshape(-1,1) # reshape 1-d categorical samples (in case of discrete action space)
             actions.append(action)
 
             state = next_state
