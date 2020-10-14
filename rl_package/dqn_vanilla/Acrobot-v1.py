@@ -6,6 +6,7 @@ import gym
 for i in range(5):
     print('trial {}'.format(i))
     env = gym.make('Acrobot-v1')
+    env.seed(i)
     model = QNetworkDense(env, MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu','relu'], NN_INIT='orthogonal', seed=i)
     model_output = \
     dqn_algorithm(ENV= env, MODEL=model,

@@ -5,6 +5,7 @@ import gym
 
 for i in range(5):
     env = gym.make('CartPole-v0')
+    env.seed(i)
     model = QNetworkDense(env, MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu','relu'], NN_INIT='orthogonal', seed=i)
     model_output = \
     dqn_algorithm(ENV= env, MODEL=model,

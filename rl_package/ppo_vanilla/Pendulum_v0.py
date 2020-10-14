@@ -4,6 +4,7 @@ import gym
 
 if __name__ == "__main__":
     env = gym.make('Pendulum-v0')
+    env.seed(1)
     for i in range(5):
         model = ActorCriticDense(env, MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], ACTOR_FINAL_ACTIVATION=None, NN_INIT='orthogonal', ACTOR_DIST_LOG_STD=0.0, seed=i)
         model_output = ppo_algorithm(env, model, NUM_ENV=8,

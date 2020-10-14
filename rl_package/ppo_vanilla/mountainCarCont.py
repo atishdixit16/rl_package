@@ -5,7 +5,7 @@ import gym
 
 if __name__ == "__main__":
     env = gym.make('MountainCarContinuous-v0')
-
+    env.seed(1)
     for i in range(1,6):
         print('trial_no: {}'.format(i))
         model = ActorCriticDense(env, MLP_LAYERS=[64,64], MLP_ACTIVATIONS=['relu', 'relu'], ACTOR_FINAL_ACTIVATION=None, NN_INIT='orthogonal', ACTOR_DIST_LOG_STD=0.0, seed=i)
