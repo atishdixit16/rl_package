@@ -118,7 +118,7 @@ class DQNSolver:
         q_t1_best = torch.max(q_t1, dim=1)[0]
         if self.double_dqn and self.use_target_network:
             q_t1_local = self.model(state_next)
-            ind = np.argmax(q_t1_local, axis=1)
+            ind = np.argmax(q_t1_local.cpu().detach().numpy(), axis=1)
         for i in range(self.batch_size):
             if self.double_dqn and self.use_target_network:
                 q_t1_best[i] = q_t1[i,ind[i]]
