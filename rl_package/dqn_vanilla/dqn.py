@@ -26,6 +26,7 @@ class DQNSolver:
                  device,
                  EPOCHS,
                  USE_TARGET_NETWORK,
+                 LOSS_TYPE,
                  GRAD_CLIP,
                  LR_ANNEAL,
                  DOUBLE_DQN,
@@ -49,6 +50,7 @@ class DQNSolver:
         self.use_target_network = USE_TARGET_NETWORK
         self.grad_clip = GRAD_CLIP
         self.lr_anneal = LR_ANNEAL
+        self.loss_type = LOSS_TYPE
         self.double_dqn =  DOUBLE_DQN
         self.total_timesteps = TOTAL_TIMESTEPS
         self.batch_size = BATCH_SIZE
@@ -126,7 +128,10 @@ class DQNSolver:
         # train the DQN network
         for _ in range(self.epochs):
             q_output = self.model(state)
-            criterion = nn.MSELoss()
+            if self.loss_type=='mse':
+                criterion = nn.MSELoss()
+            if self.loss_type=='huber':
+                criterion = nn.SmoothL1Loss()
             loss = criterion(q_output, q_t.detach())
             self.optimizer.zero_grad()
             if self.grad_clip:
@@ -182,7 +187,7 @@ def dqn_algorithm(ENV, MODEL, NUM_ENV=8,
                   EXPLORATION_MAX = 1.0, EXPLORATION_MIN = 0.02, EXPLORATION_FRACTION = 0.7,
                   TRAINING_FREQUENCY = 1000, DOUBLE_DQN = False, USE_TARGET_NETWORK = True, TARGET_UPDATE_FREQUENCY = 5000,
                   N_TEST_ENV = 200, TEST_ENV_FUNC = test_env_mean_return,
-                  LEARNING_RATE = 1e-3,  EPOCHS = 1,
+                  LEARNING_RATE = 1e-3,  EPOCHS = 1, LOSS_TYPE = 'huber',
                   GRAD_CLIP = False, LR_ANNEAL = False,
                   VERBOSE = 'False', FILE_PATH = 'results/', SAVE_MODEL = False, PRINT_FREQ = 100,
                   MODEL_FILE_NAME = 'model', LOG_FILE_NAME = 'log', TIME_FILE_NAME = 'time',
@@ -227,6 +232,7 @@ def dqn_algorithm(ENV, MODEL, NUM_ENV=8,
     assert not PRINT_FREQ % NUM_ENV, 'Invalid print frequency. For convinience, select such that PRINT_FREQ % NUM_ENV = 0'
     assert not TRAINING_FREQUENCY % NUM_ENV, 'Invalid training frequency. For convinience, select such that TRAINING_FREQUENCY % NUM_ENV = 0'
     assert not N_TEST_ENV % NUM_ENV, 'Invalid no. of test env samples. For convinience, select such that N_TEST_ENV % NUM_ENV = 0'
+    assert LOSS_TYPE in ['mse', 'huber'], 'Invalidt LOSS_TYPE. Should be one of these: mse, huber'
 
     if TOTAL_TIMESTEPS%NUM_ENV:
         print('Error: total timesteps is not divisible by no. of envs')
@@ -268,6 +274,7 @@ def dqn_algorithm(ENV, MODEL, NUM_ENV=8,
                            device,
                            EPOCHS,
                            USE_TARGET_NETWORK,
+                           LOSS_TYPE,
                            GRAD_CLIP,
                            LR_ANNEAL,
                            DOUBLE_DQN,
