@@ -189,7 +189,7 @@ def dqn_algorithm(ENV, MODEL, NUM_ENV=8,
                   N_TEST_ENV = 200, TEST_ENV_FUNC = test_env_mean_return,
                   LEARNING_RATE = 1e-3,  EPOCHS = 1, LOSS_TYPE = 'huber',
                   GRAD_CLIP = False, LR_ANNEAL = False,
-                  VERBOSE = 'False', FILE_PATH = 'results/', SAVE_MODEL = False, PRINT_FREQ = 100,
+                  VERBOSE = 'False', FILE_PATH = 'results/', SAVE_MODEL = False, MODEL_CHECKPOINT=10000, PRINT_FREQ = 100,
                   MODEL_FILE_NAME = 'model', LOG_FILE_NAME = 'log', TIME_FILE_NAME = 'time',
                   SEED=1):
 
@@ -230,6 +230,7 @@ def dqn_algorithm(ENV, MODEL, NUM_ENV=8,
 
     assert not TOTAL_TIMESTEPS % NUM_ENV, 'Invalid total timesteps. For convinience, select such that TOTAL_TIMESTEPS % NUM_ENV = 0'
     assert not PRINT_FREQ % NUM_ENV, 'Invalid print frequency. For convinience, select such that PRINT_FREQ % NUM_ENV = 0'
+    assert not MODEL_CHECKPOINT % NUM_ENV, 'Invalid model checkpoint frequency. For convinience, select such that MODEL_CHECKPOINT % NUM_ENV = 0'
     assert not TRAINING_FREQUENCY % NUM_ENV, 'Invalid training frequency. For convinience, select such that TRAINING_FREQUENCY % NUM_ENV = 0'
     assert not N_TEST_ENV % NUM_ENV, 'Invalid no. of test env samples. For convinience, select such that N_TEST_ENV % NUM_ENV = 0'
     assert LOSS_TYPE in ['mse', 'huber'], 'Invalidt LOSS_TYPE. Should be one of these: mse, huber'
@@ -318,6 +319,10 @@ def dqn_algorithm(ENV, MODEL, NUM_ENV=8,
                 if SAVE_MODEL:
                     torch.save(dqn_solver.model.state_dict(), FILE_PATH+MODEL_FILE_NAME )
                 return dqn_solver.model
+            if SAVE_MODEL and MODEL_CHECKPOINT%t==0:
+                if not os.path.exists(FILE_PATH):
+                    os.makedirs(FILE_PATH)
+                torch.save(dqn_solver.model.state_dict(), FILE_PATH+MODEL_FILE_NAME )
             if USE_TARGET_NETWORK and t%TARGET_UPDATE_FREQUENCY==0:
                 dqn_solver.update_target_network()
 
