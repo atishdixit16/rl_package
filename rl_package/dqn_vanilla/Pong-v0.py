@@ -20,7 +20,7 @@ for i in range(5):
     model = QNetworkCNN(env)
     model_output = \
     dqn_algorithm(ENV= env, MODEL=model,
-                  NUM_ENV=20,
+                  NUM_ENV=8,
                   SEED=i,
                   TOTAL_TIMESTEPS = 2500000,
                   GAMMA = 0.99,
