@@ -319,7 +319,7 @@ def dqn_algorithm(ENV, MODEL, NUM_ENV=8,
                 if SAVE_MODEL:
                     torch.save(dqn_solver.model.state_dict(), FILE_PATH+MODEL_FILE_NAME )
                 return dqn_solver.model
-            if SAVE_MODEL and MODEL_CHECKPOINT%t==0:
+            if SAVE_MODEL and t%MODEL_CHECKPOINT==0:
                 if not os.path.exists(FILE_PATH):
                     os.makedirs(FILE_PATH)
                 torch.save(dqn_solver.model.state_dict(), FILE_PATH+MODEL_FILE_NAME )
