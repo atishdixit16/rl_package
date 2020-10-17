@@ -100,7 +100,7 @@ def ppo_algorithm(ENV, MODEL,
                   GAMMA=0.99, LAMBDA=0.95,
                   LEARNING_RATE=1e-3, GRAD_CLIP=False, LR_ANNEAL=False, NN_INIT='normal',
                   PRINT_FREQ=8000, N_TEST_ENV=48, TEST_ENV_FUNC=test_env_mean_return,
-                  SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_FILE_NAME='model',
+                  SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_CHECKPOINT=20000, MODEL_FILE_NAME='model',
                   SEED=4):
 
     '''
@@ -204,6 +204,11 @@ def ppo_algorithm(ENV, MODEL,
                 test_rewards.append(test_reward)
                 timesteps.append(steps)
                 print('timestep : {}, reward: {}'.format(steps, round(test_reward)))
+
+            if SAVE_MODEL and steps%MODEL_CHECKPOINT==0:
+                if not os.path.exists(FILE_PATH):
+                    os.makedirs(FILE_PATH)
+                torch.save(model.state_dict(), FILE_PATH+MODEL_FILE_NAME )
 
         next_state = torch.FloatTensor(next_state).to(device)
         _, next_value = model(next_state)
