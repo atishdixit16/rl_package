@@ -182,19 +182,19 @@ def get_moduledict_cnn(num_inputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_MAXPOOL, CNN
     return module_list
 
 
-def get_moduledict_fc(num_inputs, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key):
+def get_moduledict_fc(num_inputs, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, FC_DIM, network_key):
     module_list = {}
     if network_key=='actor':
-        module_list['layer 0'] = nn.Linear(num_inputs, 512)
+        module_list['layer 0'] = nn.Linear(num_inputs, FC_DIM)
         initialize_weights( module_list['layer 0'] , NN_INIT, scale=1.0)
         module_list['layer 1'] = nn.ReLU()
-        module_list['layer 2'] = nn.Linear(512, num_outputs)
+        module_list['layer 2'] = nn.Linear(FC_DIM, num_outputs)
         initialize_weights( module_list['layer 2'] , NN_INIT, scale=1.0)
     elif network_key=='critic':
-        module_list['layer 0'] = nn.Linear(num_inputs, 512)
+        module_list['layer 0'] = nn.Linear(num_inputs, FC_DIM)
         initialize_weights( module_list['layer 0'] , NN_INIT, scale=1.0)
         module_list['layer 1'] = nn.ReLU()
-        module_list['layer 2'] = nn.Linear(512, 1)
+        module_list['layer 2'] = nn.Linear(FC_DIM, 1)
         initialize_weights( module_list['layer 2'] , NN_INIT, scale=1.0)
     else:
         raise Exception('invalid network key. should be one of these: actor or critic')
@@ -207,7 +207,7 @@ def get_moduledict_fc(num_inputs, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, 
 
 
 class QNetworkCNN(nn.Module):
-    def __init__(self, env, CNN_LAYERS=[32, 64, 64], CNN_KERNEL_SIZES=[8,4,3], CNN_STRIDES=[4,2,1], CNN_ACTIVATIONS=['relu', 'relu', 'relu'], CNN_MAXPOOL=['False', 'False', 'False'], NN_INIT='xavier', ACTOR_FINAL_ACTIVATION=None, std=0.0, seed=1):
+    def __init__(self, env, CNN_LAYERS=[32, 64, 64], CNN_KERNEL_SIZES=[8,4,3], CNN_STRIDES=[4,2,1], CNN_ACTIVATIONS=['relu', 'relu', 'relu'], CNN_MAXPOOL=['False', 'False', 'False'], NN_INIT='xavier', ACTOR_FINAL_ACTIVATION=None, FC_DIM=256, std=0.0, seed=1):
         '''
         mlp_layers : list of neurons in each hodden layer of the DQN network 
         mlp_activations : list of activation functions in each hodden layer of the DQN network
@@ -221,7 +221,7 @@ class QNetworkCNN(nn.Module):
 
         self.actor_cnn = nn.Sequential ( OrderedDict(get_moduledict_cnn(num_inputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_MAXPOOL, CNN_KERNEL_SIZES, CNN_STRIDES, NN_INIT)))
         conv_out_size = self._get_conv_out(env.observation_space.shape)
-        self.fc_network = nn.Sequential ( OrderedDict(get_moduledict_fc(conv_out_size, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, network_key='actor')))
+        self.fc_network = nn.Sequential ( OrderedDict(get_moduledict_fc(conv_out_size, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, FC_DIM, network_key='actor')))
 
     def _get_conv_out(self, shape):
         o = self.actor_cnn(torch.zeros(1, *shape))
