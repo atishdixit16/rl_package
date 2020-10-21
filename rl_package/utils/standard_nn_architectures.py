@@ -207,7 +207,10 @@ def get_moduledict_fc(num_inputs, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, 
 
 
 class QNetworkCNN(nn.Module):
-    def __init__(self, env, CNN_LAYERS=[32, 64, 64], CNN_KERNEL_SIZES=[8,4,3], CNN_STRIDES=[4,2,1], CNN_ACTIVATIONS=['relu', 'relu', 'relu'], CNN_MAXPOOL=['False', 'False', 'False'], NN_INIT='xavier', ACTOR_FINAL_ACTIVATION=None, FC_DIM=256, std=0.0, seed=1):
+    def __init__(self, env, 
+                 CNN_LAYERS=[32, 64, 64], CNN_KERNEL_SIZES=[8,4,3], CNN_STRIDES=[4,2,1], CNN_ACTIVATIONS=['relu', 'relu', 'relu'], CNN_MAXPOOL=['False', 'False', 'False'], CNN_NN_INIT='xavier', 
+                 FC_LAYERS = [512, 256, 128], FC_ACTIVATIONS = ['relu', 'relu', 'relu'], FC_NN_INIT='orthogonal', 
+                 ACTOR_FINAL_ACTIVATION=None, std=0.0, seed=1):
         '''
         mlp_layers : list of neurons in each hodden layer of the DQN network 
         mlp_activations : list of activation functions in each hodden layer of the DQN network
@@ -219,9 +222,9 @@ class QNetworkCNN(nn.Module):
         num_outputs = env.action_space.n
 
 
-        self.actor_cnn = nn.Sequential ( OrderedDict(get_moduledict_cnn(num_inputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_MAXPOOL, CNN_KERNEL_SIZES, CNN_STRIDES, NN_INIT)))
+        self.actor_cnn = nn.Sequential ( OrderedDict(get_moduledict_cnn(num_inputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_MAXPOOL, CNN_KERNEL_SIZES, CNN_STRIDES, CNN_NN_INIT)))
         conv_out_size = self._get_conv_out(env.observation_space.shape)
-        self.fc_network = nn.Sequential ( OrderedDict(get_moduledict_fc(conv_out_size, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, FC_DIM, network_key='actor')))
+        self.fc_network = nn.Sequential ( OrderedDict(get_moduledict(conv_out_size, num_outputs, FC_LAYERS, FC_ACTIVATIONS, ACTOR_FINAL_ACTIVATION, FC_NN_INIT, network_key='actor')))
 
     def _get_conv_out(self, shape):
         o = self.actor_cnn(torch.zeros(1, *shape))
