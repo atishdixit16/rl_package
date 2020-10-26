@@ -182,30 +182,6 @@ def get_moduledict_cnn(num_inputs, CNN_LAYERS, CNN_ACTIVATIONS, CNN_MAXPOOL, CNN
     return module_list
 
 
-def get_moduledict_fc(num_inputs, num_outputs, ACTOR_FINAL_ACTIVATION, NN_INIT, FC_DIM, network_key):
-    module_list = {}
-    if network_key=='actor':
-        module_list['layer 0'] = nn.Linear(num_inputs, FC_DIM)
-        initialize_weights( module_list['layer 0'] , NN_INIT, scale=1.0)
-        module_list['layer 1'] = nn.ReLU()
-        module_list['layer 2'] = nn.Linear(FC_DIM, num_outputs)
-        initialize_weights( module_list['layer 2'] , NN_INIT, scale=1.0)
-    elif network_key=='critic':
-        module_list['layer 0'] = nn.Linear(num_inputs, FC_DIM)
-        initialize_weights( module_list['layer 0'] , NN_INIT, scale=1.0)
-        module_list['layer 1'] = nn.ReLU()
-        module_list['layer 2'] = nn.Linear(FC_DIM, 1)
-        initialize_weights( module_list['layer 2'] , NN_INIT, scale=1.0)
-    else:
-        raise Exception('invalid network key. should be one of these: actor or critic')
-    
-    if network_key=='actor':
-        if ACTOR_FINAL_ACTIVATION is not None:
-            module_list['final layer act']=get_activation(ACTOR_FINAL_ACTIVATION)
-
-    return module_list
-
-
 class QNetworkCNN(nn.Module):
     def __init__(self, env, 
                  CNN_LAYERS=[32, 64, 64], CNN_KERNEL_SIZES=[8,4,3], CNN_STRIDES=[4,2,1], CNN_ACTIVATIONS=['relu', 'relu', 'relu'], CNN_MAXPOOL=['False', 'False', 'False'], CNN_NN_INIT='xavier', 
