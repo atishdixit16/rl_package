@@ -58,7 +58,7 @@ def generate_environment(template,
         action_space = 'continous'
 
     if template[2]=='CK':
-        k_type = 'uniform'
+        k_type = 'constant'
     else:
         k_type = 'random'
 
@@ -71,11 +71,6 @@ def generate_environment(template,
                  s_wir, s_oir, 
                  dt, nstep, terminal_step,
                  state_spatial_param, state_temporal_param, action_space, seed)
-
-    if template[2]=='CK':
-        const_k = batch_generate(nx=nx, ny=ny, length=k_l, sigma=k_sigma, lx=lx, ly=ly, sample_size=1)
-        const_k = np.exp(const_k[0])
-        env.set_k(const_k)
 
     return env
 
