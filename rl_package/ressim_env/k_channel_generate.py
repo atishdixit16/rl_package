@@ -51,4 +51,4 @@ def generate_train_data():
     k2 = single_generate(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125, channel_left_end=bottom, channel_right_end=bottom)
     k3 = single_generate(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125, channel_left_end=top, channel_right_end=bottom)
     k4 = single_generate(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125, channel_left_end=bottom, channel_right_end=top)
-    return np.array([k0, k1, k2, k3, k4, k5])
+    return np.array([k0, k1, k2, k3, k4])
