@@ -85,12 +85,14 @@ class ResSimEnv_v1():
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def action_to_q_mapping(action):
+    def action_to_q_mapping(self, action):
         action = np.clip(action,0,1)
         inj_flow = action[:self.n_inj] / np.sum(action[:self.n_inj])
         inj_flow = self.Q * inj_flow
         prod_flow = action[self.n_inj:] / np.sum(action[self.n_inj:])
         prod_flow = -self.Q * prod_flow
+
+        q = np.zeros(self.grid.shape)
         i=0
         for x,y in zip(self.i_x, self.i_y):
             q[x,y] = inj_flow[i]
@@ -120,7 +122,8 @@ class ResSimEnv_v1():
             self.solverS.v = self.solverP.v
             self.solverS.step(self.dt)
             self.s_load = self.solverS.s
-            oil_pr = oil_pr + (-self.q[0,0] * (1 - self.f_fn( self.s_load[0,0]) ) + -self.q[-1,0] * ( 1 - self.f_fn( self.s_load[-1,0]) ) )*self.dt # oil production
+            # oil_pr = oil_pr + (-self.q[0,0] * (1 - self.f_fn( self.s_load[0,0]) ) + -self.q[-1,0] * ( 1 - self.f_fn( self.s_load[-1,0]) ) )*self.dt # oil production
+            oil_pr = oil_pr + -np.sum( self.q[self.q<0] * ( 1- self.f_fn(self.s_load[self.q<0]) ) )*self.dt
 
         # state
         self.state = self.s_load.reshape(-1)

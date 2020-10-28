@@ -138,7 +138,7 @@ class Parameters(object):
     def q(self, q):
         if q is not None:
             assert isinstance(q, np.ndarray)
-            assert abs( np.sum(q) ) < np.finfo(float).eps, "Unbalanced source term"
+            assert abs( np.sum(q) ) < 1000*np.finfo(float).eps, "Unbalanced source term"
             self.__q = q
 
     @s.setter
