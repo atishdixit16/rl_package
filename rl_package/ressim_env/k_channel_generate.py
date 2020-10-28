@@ -42,13 +42,13 @@ def batch_generate(nx=32, ny=32, lx=1.0, ly=1.0, channel_k=1.0, base_k=0.01, cha
         k_batch.append(k)
     return np.array(k_batch)
 
-def generate_train_data():
+def generate_train_data(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125):
     top=0.125
     mid=0.4375
     bottom=0.75
-    k0 = single_generate(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125, channel_left_end=mid, channel_right_end=mid)
-    k1 = single_generate(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125, channel_left_end=top, channel_right_end=top)
-    k2 = single_generate(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125, channel_left_end=bottom, channel_right_end=bottom)
-    k3 = single_generate(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125, channel_left_end=top, channel_right_end=bottom)
-    k4 = single_generate(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125, channel_left_end=bottom, channel_right_end=top)
+    k0 = single_generate(nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=mid, channel_right_end=mid)
+    k1 = single_generate( nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=top, channel_right_end=top)
+    k2 = single_generate( nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=bottom, channel_right_end=bottom)
+    k3 = single_generate( nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=top, channel_right_end=bottom)
+    k4 = single_generate( nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=bottom, channel_right_end=top)
     return np.array([k0, k1, k2, k3, k4])
