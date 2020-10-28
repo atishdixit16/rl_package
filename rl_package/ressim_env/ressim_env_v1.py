@@ -13,7 +13,7 @@ from rl_package.ressim_env.utils import linear_mobility, quadratic_mobility, lam
 class ResSimEnv_v1():
 
     def __init__(self,
-                 grid, k, phi, s_wir, soir, # domain properties
+                 grid, k, phi, s_wir, s_oir, # domain properties
                  mu_w, mu_o, mobility, # fluid properties
                  dt, nstep, terminal_step, # timesteps
                  q, s, # initial conditions
@@ -25,6 +25,7 @@ class ResSimEnv_v1():
         # domain properties
         self.grid=grid
         self.k = k
+        self.phi = phi
         if k_list is not None:
             self.k = np.random.choice(k_list.shape[0])
         self.s_wir = s_wir
@@ -42,12 +43,15 @@ class ResSimEnv_v1():
         self.terminal_step = terminal_step # terminal step in episode
         self.episode_step = 0
 
-        # original oil in place
-        self.ooip = self.grid.lx * self.grid.ly * self.phi[0,0] * (1 - self.s_wir-self.s_oir)
-
         # initial conditions
         self.q = q
         self.s_load = s
+
+        # env parameters
+        self.k_list = k_list
+
+        # original oil in place
+        self.ooip = self.grid.lx * self.grid.ly * self.phi[0,0] * (1 - self.s_wir-self.s_oir)
 
         # Model function (mobility and fractional flow function)
         if mobility=='linear':
@@ -142,8 +146,8 @@ class ResSimEnv_v1():
         self.q[-1,0]=-0.5 # producer 2
         self.q[0,-1]=1.0 # injector 1
 
-        if k_list is not None:
-            self.k = np.random.choice(k_list.shape[0])
+        if self.k_list is not None:
+            self.k = np.random.choice(self.k_list.shape[0])
 
         self.episode_step = 0
 
