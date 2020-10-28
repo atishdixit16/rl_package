@@ -45,7 +45,7 @@ class ResSimEnv_v1():
 
         # initial conditions
         self.q = q
-        self.s_load = s
+        self.s = s
 
         # env parameters
         self.k_list = k_list
@@ -66,6 +66,7 @@ class ResSimEnv_v1():
 
         # RL parameters
         # state
+        self.s_load = self.s
         self.state = self.s_load.reshape(-1)
         high = np.array([1e5]*self.state.shape[0])
         self.observation_space = spaces.Box(low= -high, high=high, dtype=np.float64)
@@ -152,7 +153,6 @@ class ResSimEnv_v1():
         self.episode_step = 0
 
         self.s_load = self.s
-        self.state = self.state_processing()
 
         return self.state
 
