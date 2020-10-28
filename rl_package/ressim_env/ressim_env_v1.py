@@ -101,12 +101,14 @@ class ResSimEnv_v1():
         for x,y in zip(self.p_x, self.p_y):
             q[x,y] = prod_flow[i]
             i=i+1
+
+        q[11,11] = q[11,11] - np.sum(q) # to adjust unbalanced source term due to precision error
         return q
 
 
     def step(self, action):
 
-        self.q = self.action_to_q_mapping(action)        
+        self.q = self.action_to_q_mapping(action)
 
         # solve pressure
         self.solverP = PressureEquation(self.grid, q=self.q, k=self.k, lamb_fn=self.lamb_fn)
