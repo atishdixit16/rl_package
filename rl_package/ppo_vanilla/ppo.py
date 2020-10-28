@@ -98,7 +98,7 @@ def ppo_algorithm(ENV, MODEL,
                   TOTAL_STEPS=200000, NSTEPS=64, MINIBATCH_SIZE=128, N_EPOCH=30,
                   CLIP_PARAM=0.1, VF_COEF=0.5, ENT_COEF=0.001,
                   GAMMA=0.99, LAMBDA=0.95,
-                  LEARNING_RATE=1e-3, GRAD_CLIP=False, LR_ANNEAL=False, NN_INIT='normal',
+                  LEARNING_RATE=1e-3, GRAD_CLIP=False, LR_ANNEAL=False, 
                   PRINT_FREQ=8000, N_TEST_ENV=48, TEST_ENV_FUNC=test_env_mean_return,
                   SAVE_RESULTS=False, FILE_PATH='results/', LOG_FILE_NAME='log', SAVE_MODEL=False, MODEL_CHECKPOINT=20000, MODEL_FILE_NAME='model',
                   SEED=4):
