@@ -156,6 +156,7 @@ class ResSimEnv_v1():
         self.episode_step = 0
 
         self.s_load = self.s
+        self.state = self.s_load.reshape(-1)
 
         return self.state
 
