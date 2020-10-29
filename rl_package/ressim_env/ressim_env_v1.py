@@ -86,12 +86,15 @@ class ResSimEnv_v1():
         return [seed]
 
     def action_to_q_mapping(self, action):
+        
+        # convert input array into producer/injector 
         action = np.clip(action,0,1)
         inj_flow = action[:self.n_inj] / np.sum(action[:self.n_inj])
         inj_flow = self.Q * inj_flow
         prod_flow = action[self.n_inj:] / np.sum(action[self.n_inj:])
         prod_flow = -self.Q * prod_flow
 
+        # add producer/injector flow values
         q = np.zeros(self.grid.shape)
         i=0
         for x,y in zip(self.i_x, self.i_y):
@@ -102,7 +105,7 @@ class ResSimEnv_v1():
             q[x,y] = prod_flow[i]
             i=i+1
 
-        q[11,11] = q[11,11] - np.sum(q) # to adjust unbalanced source term due to precision error
+        q[3,3] = q[3,3] - np.sum(q) # to adjust unbalanced source term in arbitary location in the field due to precision error
         return q
 
 
