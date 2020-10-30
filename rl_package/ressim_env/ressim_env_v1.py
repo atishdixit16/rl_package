@@ -44,6 +44,7 @@ class ResSimEnv_v1():
         self.episode_step = 0
 
         # initial conditions
+        self.q_init = q # storing inital values for reset function
         self.q = q
         self.s = s
 
@@ -150,6 +151,8 @@ class ResSimEnv_v1():
         self.k = k
 
     def reset(self):
+
+        self.q = self.q_init
 
         if self.k_list is not None:
             self.k = np.random.choice(self.k_list.shape[0])
