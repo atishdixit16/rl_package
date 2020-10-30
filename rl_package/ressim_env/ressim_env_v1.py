@@ -151,10 +151,6 @@ class ResSimEnv_v1():
 
     def reset(self):
 
-        self.q[0,0]=-0.5 # producer 1
-        self.q[-1,0]=-0.5 # producer 2
-        self.q[0,-1]=1.0 # injector 1
-
         if self.k_list is not None:
             self.k = np.random.choice(self.k_list.shape[0])
 
