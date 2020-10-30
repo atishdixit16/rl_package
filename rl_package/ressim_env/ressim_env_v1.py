@@ -89,7 +89,7 @@ class ResSimEnv_v1():
     def action_to_q_mapping(self, action):
         
         # convert input array into producer/injector 
-        action = np.clip(action,0,1)
+        # action = np.clip(action,0,1)
         inj_flow = action[:self.n_inj] / np.sum(action[:self.n_inj])
         inj_flow = self.Q * inj_flow
         prod_flow = action[self.n_inj:] / np.sum(action[self.n_inj:])
