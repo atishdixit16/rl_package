@@ -176,6 +176,7 @@ def test_env_mean_return(envs, model, device, n_trials):
             state = torch.FloatTensor(state).to(device)
             q_values = model(state)
             actions = np.argmax(q_values.cpu().detach().numpy() , axis=1) 
+            print(actions)
             state, reward, done, _ = envs.step(list(actions))
             total_reward += reward
         mean_return.append(np.mean(total_reward))
