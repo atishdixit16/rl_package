@@ -54,6 +54,7 @@ class PermSensEnv():
         self.observation_space = spaces.Box(low= -high, high=high, dtype=np.float64)
         
         # action
+        self.coords_p = np.argwhere(self.q<0) # producer locations
         self.action_space = spaces.Discrete(3)
 
     def f_fn(self,s): return s
@@ -67,14 +68,14 @@ class PermSensEnv():
     def action_to_q_mapping(self, action):
         assert action in (0,1,2), 'Invalid action. Should be one of these: 0,1,2'
         if action == 0:
-            self.q[0,-1] = -self.Q/2
-            self.q[-1,0] = -self.Q/2
+            self.q[self.coords_p[0][0], self.coords_p[0][1]] = -self.Q/2
+            self.q[self.coords_p[1][0], self.coords_p[1][1]] = -self.Q/2
         if action == 1:
-            self.q[0,-1] = 0.0
-            self.q[-1,0] = -self.Q
+            self.q[self.coords_p[0][0], self.coords_p[0][1]] = -0
+            self.q[self.coords_p[1][0], self.coords_p[1][1]] = -self.Q
         if action == 2:
-            self.q[0,-1] = -self.Q
-            self.q[-1,0] = 0.0
+            self.q[self.coords_p[0][0], self.coords_p[0][1]] = -self.Q
+            self.q[self.coords_p[1][0], self.coords_p[1][1]] = 0
 
         return self.q
 
