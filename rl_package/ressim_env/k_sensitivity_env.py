@@ -16,17 +16,16 @@ class PermSensEnv():
                  grid, k, phi, # domain properties
                  dt, nstep, terminal_step, # timesteps
                  q, s, # initial conditions
-                 k_list, seed): #env paramters
+                 seed): #env paramters
 
         # for reproducibility
         self.seed(seed)
 
         # domain properties
         self.grid=grid
-        self.k = k
         self.phi = phi
-        if k_list is not None:
-            self.k = np.random.choice(k_list.shape[0])
+        self.k_list = k
+        self.k = self.k_list[np.random.choice(self.k_list.shape[0])]
 
         # timesteps
         self.dt = dt  # timestep
@@ -40,13 +39,13 @@ class PermSensEnv():
         self.q = q
         self.s = s
 
-        # env parameters
-        self.k_list = k_list
-
         # original oil in place
         self.ooip = self.grid.lx * self.grid.ly * self.phi[0,0] * (1)
 
         # RL parameters
+        self.metadata = {'render.modes': []} # accordind to instructions on: https://github.com/openai/gym/blob/master/gym/core.py
+        self.reward_range = (0.0, 1.0)       # accordind to instructions on: https://github.com/openai/gym/blob/master/gym/core.py
+        self.spec = None                     # accordind to instructions on: https://github.com/openai/gym/blob/master/gym/core.py
         # state
         self.s_load = self.s
         self.state = self.s_load.reshape(-1)
@@ -55,7 +54,7 @@ class PermSensEnv():
         
         # action
         self.coords_p = np.argwhere(self.q<0) # producer locations
-        self.action_space = spaces.Discrete(3)
+        self.action_space = spaces.Discrete(2)
 
     def f_fn(self,s): return s
     
@@ -66,23 +65,19 @@ class PermSensEnv():
         return [seed]
 
     def action_to_q_mapping(self, action):
-        assert action in (0,1,2), 'Invalid action. Should be one of these: 0,1,2'
+        
+        assert action in (0,1), 'Invalid action. Should be one of these: 0,1'
         if action == 0:
-            self.q[self.coords_p[0][0], self.coords_p[0][1]] = -self.Q/2
-            self.q[self.coords_p[1][0], self.coords_p[1][1]] = -self.Q/2
+            q[self.coords_p[0][0], self.coords_p[0][1]] = 0
+            q[self.coords_p[1][0], self.coords_p[1][1]] = -self.Q
         if action == 1:
-            self.q[self.coords_p[0][0], self.coords_p[0][1]] = -0
-            self.q[self.coords_p[1][0], self.coords_p[1][1]] = -self.Q
-        if action == 2:
-            self.q[self.coords_p[0][0], self.coords_p[0][1]] = -self.Q
-            self.q[self.coords_p[1][0], self.coords_p[1][1]] = 0
+            q[self.coords_p[0][0], self.coords_p[0][1]] = -self.Q
+            q[self.coords_p[1][0], self.coords_p[1][1]] = 0
 
-        return self.q
+        return q
 
-    def step(self, action):
-
-        self.q = self.action_to_q_mapping(action)
-
+    def sim_step(self, q):
+        self.q = q
         # solve pressure
         self.solverP = PressureEquation(self.grid, q=self.q, k=self.k)
         self.solverS = SaturationEquation(self.grid, q=self.q, phi=self.phi, s=self.s_load, f_fn=self.f_fn, df_fn=self.df_fn)
@@ -105,7 +100,7 @@ class PermSensEnv():
 
         #reward
         reward = oil_pr / self.ooip # recovery rate
-        reward = reward*100 # in percentage
+        # reward = reward*100 # in percentage
 
         # done
         self.episode_step += 1
@@ -116,6 +111,13 @@ class PermSensEnv():
 
         return self.state, reward, done, {}
 
+
+    def step(self, action):
+
+        q = self.action_to_q_mapping(action)
+        state, reward, done, info = self.sim_step(q)
+        return state, reward, done, info
+
     def set_k(self, k):
         self.k = k
 
@@ -123,8 +125,7 @@ class PermSensEnv():
 
         self.q = self.q_init
 
-        if self.k_list is not None:
-            self.k = np.random.choice(self.k_list.shape[0])
+        self.k = self.k_list[np.random.choice(self.k_list.shape[0])]
 
         self.episode_step = 0
 

@@ -17,17 +17,16 @@ class ResSimEnv_v1():
                  mu_w, mu_o, mobility, # fluid properties
                  dt, nstep, terminal_step, # timesteps
                  q, s, # initial conditions
-                 k_list, seed): #env paramters
+                 seed): #env paramters
 
         # for reproducibility
         self.seed(seed)
 
         # domain properties
         self.grid=grid
-        self.k = k
+        self.k_list = k
+        self.k = self.k_list[np.random.choice(self.k_list.shape[0])]
         self.phi = phi
-        if k_list is not None:
-            self.k = np.random.choice(k_list.shape[0])
         self.s_wir = s_wir
         self.s_oir = s_oir
 
@@ -48,9 +47,6 @@ class ResSimEnv_v1():
         self.q = q
         self.s = s
 
-        # env parameters
-        self.k_list = k_list
-
         # original oil in place
         self.ooip = self.grid.lx * self.grid.ly * self.phi[0,0] * (1 - self.s_wir-self.s_oir)
 
@@ -66,6 +62,10 @@ class ResSimEnv_v1():
         self.df_fn = functools.partial(df_fn, mobi_fn=self.mobi_fn)
 
         # RL parameters
+        self.metadata = {'render.modes': []} # accordind to instructions on: https://github.com/openai/gym/blob/master/gym/core.py
+        self.reward_range = (0.0, 1.0)       # accordind to instructions on: https://github.com/openai/gym/blob/master/gym/core.py
+        self.spec = None                     # accordind to instructions on: https://github.com/openai/gym/blob/master/gym/core.py
+        
         # state
         self.s_load = self.s
         self.state = self.s_load.reshape(-1)
@@ -74,9 +74,9 @@ class ResSimEnv_v1():
         
         # action
         self.Q = np.sum(self.q[q>0])                                # total flow across the field
-        self.n_inj = self.q[self.q>0].shape[0]                      # no of injectors
+        self.n_inj = self.q[self.q>0].size                          # no of injectors
         self.i_x, self.i_y =  np.where(q>0)[0], np.where(q>0)[1]    # injector co-ordinates
-        self.n_prod = self.q[self.q<0].shape[0]                     # no of producers
+        self.n_prod = self.q[self.q<0].size                         # no of producers
         self.p_x, self.p_y =  np.where(q<0)[0], np.where(q<0)[1]    # producer co-ordinates
         self.action_space = spaces.Box(low=np.array([0]*(self.n_inj+self.n_prod), dtype=np.float64), 
                                        high=np.array([1]*(self.n_inj+self.n_prod), dtype=np.float64), 
@@ -109,10 +109,10 @@ class ResSimEnv_v1():
         q[3,3] = q[3,3] - np.sum(q) # to adjust unbalanced source term in arbitary location in the field due to precision error
         return q
 
+    
+    def sim_step(self, q):
 
-    def step(self, action):
-
-        self.q = self.action_to_q_mapping(action)
+        self.q = q
 
         # solve pressure
         self.solverP = PressureEquation(self.grid, q=self.q, k=self.k, lamb_fn=self.lamb_fn)
@@ -147,15 +147,22 @@ class ResSimEnv_v1():
 
         return self.state, reward, done, {}
 
+
+
+    def step(self, action):
+
+        q = self.action_to_q_mapping(action)
+        state, reward, done, info = self.sim_step(q)
+
+        return state, reward, done, info
+
     def set_k(self, k):
         self.k = k
 
     def reset(self):
 
         self.q = self.q_init
-
-        if self.k_list is not None:
-            self.k = np.random.choice(self.k_list.shape[0])
+        self.k = self.k_list[np.random.choice(self.k_list.shape[0])]
 
         self.episode_step = 0
 

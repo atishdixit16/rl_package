@@ -176,7 +176,6 @@ def test_env_mean_return(envs, model, device, n_trials):
             state = torch.FloatTensor(state).to(device)
             q_values = model(state)
             actions = np.argmax(q_values.cpu().detach().numpy() , axis=1) 
-            print(actions)
             state, reward, done, _ = envs.step(list(actions))
             total_reward += reward
         mean_return.append(np.mean(total_reward))
@@ -306,7 +305,7 @@ def dqn_algorithm(ENV, MODEL, NUM_ENV=8,
                 steps.append(t)
                 NN_tr_loss.append(dqn_solver.loss)
                 if VERBOSE:
-                    print('Exploration %: '+str(int(explore_percent[-1]))+', Mean_reward: '+str(round( mean100_rew[-1], 2) )+', timestep: '+str(t)+', tr_loss: '+str(np.round(NN_tr_loss[-1],4)) )
+                    print('Exploration %: '+str(int(explore_percent[-1]))+', Mean_reward: '+str(round( mean100_rew[-1], 4) )+', timestep: '+str(t)+', tr_loss: '+str(np.round(NN_tr_loss[-1],4)) )
 
             if t>TOTAL_TIMESTEPS:
                 output_table = np.stack((steps, mean100_rew, explore_percent, NN_tr_loss))
