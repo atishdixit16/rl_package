@@ -65,7 +65,7 @@ class ResSimEnv_v1():
         self.metadata = {'render.modes': []} # accordind to instructions on: https://github.com/openai/gym/blob/master/gym/core.py
         self.reward_range = (0.0, 1.0)       # accordind to instructions on: https://github.com/openai/gym/blob/master/gym/core.py
         self.spec = None                     # accordind to instructions on: https://github.com/openai/gym/blob/master/gym/core.py
-        
+
         # state
         self.s_load = self.s
         self.state = self.s_load.reshape(-1)
@@ -176,3 +176,5 @@ class ResSimEnv_v1():
 
     def close(self):
         pass
+
+    retur
