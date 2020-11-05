@@ -88,7 +88,7 @@ class ResSimEnv_v1():
 
     def action_to_q_mapping(self, action):
 
-        assert all(action) >= 0, 'Invalid action. condition violated: all(action>0) = True'        
+        assert all(action>=0), 'Invalid action. condition violated: all(action>0) = True'        
         # convert input array into producer/injector 
         inj_flow = action[:self.n_inj] / np.sum(action[:self.n_inj])
         inj_flow = self.Q * inj_flow
