@@ -1,0 +1,186 @@
+nohup: ignoring input
+2020-10-18 17:19:10.376247: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2020-10-18 17:19:10.386086: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2294690000 Hz
+2020-10-18 17:19:10.392652: I tensorflow/compiler/xla/service/service.cc:150] XLA service 0x55d9f16ba520 executing computations on platform Host. Devices:
+2020-10-18 17:19:10.392701: I tensorflow/compiler/xla/service/service.cc:158]   StreamExecutor device (0): <undefined>, <undefined>
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:528: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:529: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:530: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:535: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+Using TensorFlow backend.
+Exploration %: 96, Mean_reward: 10.27, timestep: 5000, tr_loss: 0.2088
+Exploration %: 93, Mean_reward: 9.45, timestep: 10000, tr_loss: 0.1855
+Exploration %: 90, Mean_reward: 9.58, timestep: 15000, tr_loss: 0.3973
+Exploration %: 86, Mean_reward: 9.33, timestep: 20000, tr_loss: 0.589
+Exploration %: 83, Mean_reward: 9.35, timestep: 25000, tr_loss: 0.9738
+Exploration %: 80, Mean_reward: 9.38, timestep: 30000, tr_loss: 1.6308
+Exploration %: 77, Mean_reward: 9.53, timestep: 35000, tr_loss: 3.8473
+Exploration %: 73, Mean_reward: 9.35, timestep: 40000, tr_loss: 7.3309
+Exploration %: 70, Mean_reward: 9.36, timestep: 45000, tr_loss: 11.0203
+Exploration %: 67, Mean_reward: 9.48, timestep: 50000, tr_loss: 34.5658
+Exploration %: 64, Mean_reward: 9.33, timestep: 55000, tr_loss: 36.746
+Exploration %: 60, Mean_reward: 9.58, timestep: 60000, tr_loss: 90.1874
+Exploration %: 57, Mean_reward: 9.46, timestep: 65000, tr_loss: 91.7836
+Exploration %: 54, Mean_reward: 9.28, timestep: 70000, tr_loss: 150.962
+Exploration %: 51, Mean_reward: 9.56, timestep: 75000, tr_loss: 226.693
+Exploration %: 47, Mean_reward: 9.22, timestep: 80000, tr_loss: 272.4028
+Exploration %: 44, Mean_reward: 9.54, timestep: 85000, tr_loss: 307.5969
+Exploration %: 41, Mean_reward: 9.33, timestep: 90000, tr_loss: 462.3215
+Exploration %: 37, Mean_reward: 9.45, timestep: 95000, tr_loss: 557.3056
+Exploration %: 34, Mean_reward: 9.72, timestep: 100000, tr_loss: 783.2259
+Exploration %: 31, Mean_reward: 9.36, timestep: 105000, tr_loss: 627.9976
+Exploration %: 28, Mean_reward: 9.23, timestep: 110000, tr_loss: 907.5545
+Exploration %: 24, Mean_reward: 9.18, timestep: 115000, tr_loss: 1201.1599
+Exploration %: 21, Mean_reward: 9.4, timestep: 120000, tr_loss: 1646.3629
+Exploration %: 18, Mean_reward: 9.41, timestep: 125000, tr_loss: 1390.6564
+Exploration %: 15, Mean_reward: 9.26, timestep: 130000, tr_loss: 2020.2476
+Exploration %: 11, Mean_reward: 9.46, timestep: 135000, tr_loss: 2167.0486
+Exploration %: 8, Mean_reward: 9.4, timestep: 140000, tr_loss: 2596.0532
+Exploration %: 5, Mean_reward: 9.48, timestep: 145000, tr_loss: 3387.8357
+Exploration %: 2, Mean_reward: 9.72, timestep: 150000, tr_loss: 2983.2004
+Exploration %: 2, Mean_reward: 9.14, timestep: 155000, tr_loss: 3757.1743
+Exploration %: 2, Mean_reward: 9.27, timestep: 160000, tr_loss: 4549.713
+Exploration %: 2, Mean_reward: 9.36, timestep: 165000, tr_loss: 3799.972
+Exploration %: 2, Mean_reward: 9.55, timestep: 170000, tr_loss: 4191.6104
+Exploration %: 2, Mean_reward: 9.34, timestep: 175000, tr_loss: 5291.59
+Exploration %: 2, Mean_reward: 9.48, timestep: 180000, tr_loss: 5651.714
+Exploration %: 2, Mean_reward: 9.51, timestep: 185000, tr_loss: 7832.267
+Exploration %: 2, Mean_reward: 9.5, timestep: 190000, tr_loss: 7731.2383
+Exploration %: 2, Mean_reward: 9.39, timestep: 195000, tr_loss: 6672.9585
+Exploration %: 2, Mean_reward: 9.27, timestep: 200000, tr_loss: 5373.68
+Exploration %: 2, Mean_reward: 9.53, timestep: 205000, tr_loss: 9325.42
+Exploration %: 2, Mean_reward: 9.43, timestep: 210000, tr_loss: 7852.173
+Exploration %: 2, Mean_reward: 9.3, timestep: 215000, tr_loss: 9875.661
+Exploration %: 2, Mean_reward: 9.4, timestep: 220000, tr_loss: 12112.245
+Exploration %: 2, Mean_reward: 9.54, timestep: 225000, tr_loss: 10578.743
+Exploration %: 2, Mean_reward: 9.55, timestep: 230000, tr_loss: 10471.748
+Exploration %: 2, Mean_reward: 9.19, timestep: 235000, tr_loss: 15241.622
+Exploration %: 2, Mean_reward: 9.54, timestep: 240000, tr_loss: 14685.853
+Exploration %: 2, Mean_reward: 9.56, timestep: 245000, tr_loss: 13578.6045
+Exploration %: 2, Mean_reward: 9.52, timestep: 250000, tr_loss: 12105.836
+Exploration %: 96, Mean_reward: 9.43, timestep: 5000, tr_loss: 0.2377
+Exploration %: 93, Mean_reward: 9.51, timestep: 10000, tr_loss: 0.2147
+Exploration %: 90, Mean_reward: 9.5, timestep: 15000, tr_loss: 0.547
+Exploration %: 86, Mean_reward: 9.55, timestep: 20000, tr_loss: 0.5915
+Exploration %: 83, Mean_reward: 9.47, timestep: 25000, tr_loss: 1.2486
+Exploration %: 80, Mean_reward: 8.98, timestep: 30000, tr_loss: 3.0623
+Exploration %: 77, Mean_reward: 9.15, timestep: 35000, tr_loss: 5.3962
+Exploration %: 73, Mean_reward: 9.36, timestep: 40000, tr_loss: 19.0684
+Exploration %: 70, Mean_reward: 9.17, timestep: 45000, tr_loss: 27.3024
+Exploration %: 67, Mean_reward: 9.32, timestep: 50000, tr_loss: 47.936
+Exploration %: 64, Mean_reward: 9.4, timestep: 55000, tr_loss: 49.1448
+Exploration %: 60, Mean_reward: 9.27, timestep: 60000, tr_loss: 109.9822
+Exploration %: 57, Mean_reward: 9.62, timestep: 65000, tr_loss: 138.1189
+Exploration %: 54, Mean_reward: 9.38, timestep: 70000, tr_loss: 189.5927
+Exploration %: 51, Mean_reward: 9.29, timestep: 75000, tr_loss: 306.9219
+Exploration %: 47, Mean_reward: 9.5, timestep: 80000, tr_loss: 375.2047
+Exploration %: 44, Mean_reward: 9.29, timestep: 85000, tr_loss: 341.8592
+Exploration %: 41, Mean_reward: 9.27, timestep: 90000, tr_loss: 723.3203
+Exploration %: 37, Mean_reward: 9.4, timestep: 95000, tr_loss: 844.6058
+Exploration %: 34, Mean_reward: 9.21, timestep: 100000, tr_loss: 1124.6261
+Exploration %: 31, Mean_reward: 9.46, timestep: 105000, tr_loss: 1072.8091
+Exploration %: 28, Mean_reward: 9.28, timestep: 110000, tr_loss: 1269.447
+Exploration %: 24, Mean_reward: 9.53, timestep: 115000, tr_loss: 1570.8279
+Exploration %: 21, Mean_reward: 9.49, timestep: 120000, tr_loss: 1693.2988
+Exploration %: 18, Mean_reward: 9.3, timestep: 125000, tr_loss: 1807.3962
+Exploration %: 15, Mean_reward: 9.42, timestep: 130000, tr_loss: 2464.3613
+Exploration %: 11, Mean_reward: 9.52, timestep: 135000, tr_loss: 3248.163
+Exploration %: 8, Mean_reward: 9.46, timestep: 140000, tr_loss: 3366.514
+Exploration %: 5, Mean_reward: 9.25, timestep: 145000, tr_loss: 4079.948
+Exploration %: 2, Mean_reward: 9.04, timestep: 150000, tr_loss: 3794.2676
+Exploration %: 2, Mean_reward: 9.3, timestep: 155000, tr_loss: 5858.2383
+Exploration %: 2, Mean_reward: 9.33, timestep: 160000, tr_loss: 4886.3994
+Exploration %: 2, Mean_reward: 9.46, timestep: 165000, tr_loss: 5688.2144
+Exploration %: 2, Mean_reward: 9.35, timestep: 170000, tr_loss: 5692.9897
+Exploration %: 2, Mean_reward: 9.24, timestep: 175000, tr_loss: 5817.871
+Exploration %: 2, Mean_reward: 9.44, timestep: 180000, tr_loss: 9008.297
+Exploration %: 2, Mean_reward: 9.47, timestep: 185000, tr_loss: 9546.737
+Exploration %: 2, Mean_reward: 9.46, timestep: 190000, tr_loss: 7541.712
+Exploration %: 2, Mean_reward: 9.18, timestep: 195000, tr_loss: 10370.425
+Exploration %: 2, Mean_reward: 9.16, timestep: 200000, tr_loss: 9573.723
+Exploration %: 2, Mean_reward: 9.4, timestep: 205000, tr_loss: 11736.402
+Exploration %: 2, Mean_reward: 9.3, timestep: 210000, tr_loss: 12296.134
+Exploration %: 2, Mean_reward: 9.61, timestep: 215000, tr_loss: 11446.521
+Exploration %: 2, Mean_reward: 9.32, timestep: 220000, tr_loss: 13849.52
+Exploration %: 2, Mean_reward: 9.27, timestep: 225000, tr_loss: 10081.507
+Exploration %: 2, Mean_reward: 9.67, timestep: 230000, tr_loss: 15573.053
+Exploration %: 2, Mean_reward: 9.4, timestep: 235000, tr_loss: 12800.541
+Exploration %: 2, Mean_reward: 9.58, timestep: 240000, tr_loss: 17426.55
+Exploration %: 2, Mean_reward: 9.4, timestep: 245000, tr_loss: 19071.348
+Exploration %: 2, Mean_reward: 9.62, timestep: 250000, tr_loss: 12331.139
+Exploration %: 96, Mean_reward: 57.94, timestep: 5000, tr_loss: 0.2259
+Exploration %: 93, Mean_reward: 39.8, timestep: 10000, tr_loss: 0.1986
+Exploration %: 90, Mean_reward: 9.42, timestep: 15000, tr_loss: 0.2755
+Exploration %: 86, Mean_reward: 9.24, timestep: 20000, tr_loss: 0.38
+Exploration %: 83, Mean_reward: 9.56, timestep: 25000, tr_loss: 0.693
+Exploration %: 80, Mean_reward: 9.51, timestep: 30000, tr_loss: 2.0164
+Exploration %: 77, Mean_reward: 9.47, timestep: 35000, tr_loss: 4.2577
+Exploration %: 73, Mean_reward: 9.33, timestep: 40000, tr_loss: 11.0489
+Exploration %: 70, Mean_reward: 9.16, timestep: 45000, tr_loss: 11.5531
+Exploration %: 67, Mean_reward: 9.35, timestep: 50000, tr_loss: 17.4873
+Exploration %: 64, Mean_reward: 9.32, timestep: 55000, tr_loss: 35.0922
+Exploration %: 60, Mean_reward: 9.31, timestep: 60000, tr_loss: 58.6893
+Exploration %: 57, Mean_reward: 9.29, timestep: 65000, tr_loss: 75.5505
+Exploration %: 54, Mean_reward: 9.17, timestep: 70000, tr_loss: 112.2484
+Exploration %: 51, Mean_reward: 9.42, timestep: 75000, tr_loss: 130.4876
+Exploration %: 47, Mean_reward: 9.5, timestep: 80000, tr_loss: 208.193
+Exploration %: 44, Mean_reward: 9.55, timestep: 85000, tr_loss: 288.0077
+Exploration %: 41, Mean_reward: 9.33, timestep: 90000, tr_loss: 278.0194
+Exploration %: 37, Mean_reward: 9.34, timestep: 95000, tr_loss: 355.5234
+Exploration %: 34, Mean_reward: 9.48, timestep: 100000, tr_loss: 536.3924
+Exploration %: 31, Mean_reward: 9.65, timestep: 105000, tr_loss: 821.8078
+Exploration %: 28, Mean_reward: 9.39, timestep: 110000, tr_loss: 1061.5569
+Exploration %: 24, Mean_reward: 9.3, timestep: 115000, tr_loss: 1033.2332
+Exploration %: 21, Mean_reward: 9.38, timestep: 120000, tr_loss: 1147.1262
+Exploration %: 18, Mean_reward: 9.39, timestep: 125000, tr_loss: 1407.9724
+Exploration %: 15, Mean_reward: 9.45, timestep: 130000, tr_loss: 2161.3872
+Exploration %: 11, Mean_reward: 9.46, timestep: 135000, tr_loss: 1817.3944
+Exploration %: 8, Mean_reward: 9.33, timestep: 140000, tr_loss: 3453.0403
+Exploration %: 5, Mean_reward: 9.35, timestep: 145000, tr_loss: 3141.325
+Exploration %: 2, Mean_reward: 9.65, timestep: 150000, tr_loss: 4411.9443
+Exploration %: 2, Mean_reward: 9.44, timestep: 155000, tr_loss: 2842.6343
+Exploration %: 2, Mean_reward: 9.41, timestep: 160000, tr_loss: 4782.7295
+Exploration %: 2, Mean_reward: 9.08, timestep: 165000, tr_loss: 4139.5366
+Exploration %: 2, Mean_reward: 9.4, timestep: 170000, tr_loss: 4392.8076
+Exploration %: 2, Mean_reward: 9.4, timestep: 175000, tr_loss: 4679.8354
+Exploration %: 2, Mean_reward: 9.43, timestep: 180000, tr_loss: 4947.6743
+Exploration %: 2, Mean_reward: 9.56, timestep: 185000, tr_loss: 7060.3926
+Exploration %: 2, Mean_reward: 9.42, timestep: 190000, tr_loss: 6150.792
+Exploration %: 2, Mean_reward: 9.39, timestep: 195000, tr_loss: 7949.784
+Exploration %: 2, Mean_reward: 9.51, timestep: 200000, tr_loss: 7263.159
+Exploration %: 2, Mean_reward: 9.49, timestep: 205000, tr_loss: 9323.451
+Exploration %: 2, Mean_reward: 9.3, timestep: 210000, tr_loss: 10060.777
+Exploration %: 2, Mean_reward: 9.24, timestep: 215000, tr_loss: 8942.115
+Exploration %: 2, Mean_reward: 9.3, timestep: 220000, tr_loss: 10330.783
+Exploration %: 2, Mean_reward: 9.47, timestep: 225000, tr_loss: 12960.267
+Exploration %: 2, Mean_reward: 9.34, timestep: 230000, tr_loss: 12817.431
+Exploration %: 2, Mean_reward: 9.5, timestep: 235000, tr_loss: 14728.707
+Exploration %: 2, Mean_reward: 9.15, timestep: 240000, tr_loss: 17377.389
+Exploration %: 2, Mean_reward: 9.25, timestep: 245000, tr_loss: 15567.842
+Exploration %: 2, Mean_reward: 9.39, timestep: 250000, tr_loss: 16804.297
+nohup: ignoring input
+2020-10-18 17:28:33.877575: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2020-10-18 17:28:33.888328: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2294690000 Hz
+2020-10-18 17:28:33.895097: I tensorflow/compiler/xla/service/service.cc:150] XLA service 0x55c8530d9380 executing computations on platform Host. Devices:
+2020-10-18 17:28:33.895144: I tensorflow/compiler/xla/service/service.cc:158]   StreamExecutor device (0): <undefined>, <undefined>
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:528: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:529: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:530: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/home/ad181/anaconda3/lib/python3.7/site-packages/tensorflow/python/framework/dtypes.py:535: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+Using TensorFlow backend.
