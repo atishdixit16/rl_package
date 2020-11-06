@@ -68,13 +68,13 @@ class PermSensEnv():
         
         assert action in (0,1), 'Invalid action. Should be one of these: 0,1'
         if action == 0:
-            q[self.coords_p[0][0], self.coords_p[0][1]] = 0
-            q[self.coords_p[1][0], self.coords_p[1][1]] = -self.Q
+            self.q[self.coords_p[0][0], self.coords_p[0][1]] = 0
+            self.q[self.coords_p[1][0], self.coords_p[1][1]] = -self.Q
         if action == 1:
-            q[self.coords_p[0][0], self.coords_p[0][1]] = -self.Q
-            q[self.coords_p[1][0], self.coords_p[1][1]] = 0
+            self.q[self.coords_p[0][0], self.coords_p[0][1]] = -self.Q
+            self.q[self.coords_p[1][0], self.coords_p[1][1]] = 0
 
-        return q
+        return self.q
 
     def sim_step(self, q):
         self.q = q

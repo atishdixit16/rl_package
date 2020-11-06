@@ -116,8 +116,7 @@ class ResSimEnv_v1():
     def action_to_q_mapping_binary(self, action):
 
         assert all(action>=0) and all(action<=1.0), 'Invalid action. condition violated: all(action>0) and all(action<1) = True' 
-        action[action<0.5] = 0
-        action[action>=0.5] = 1.0
+        action = np.round(action)
         # convert input array into producer/injector flow values
         inj_flow = action[:self.n_inj] / np.sum(action[:self.n_inj])
         inj_flow = self.Q * inj_flow
