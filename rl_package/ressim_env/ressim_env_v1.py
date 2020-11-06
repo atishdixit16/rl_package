@@ -129,13 +129,11 @@ class ResSimEnv_v1():
         # add producer/injector flow values
         q = np.zeros(self.grid.shape)
         i=0
-        for x,y in zip(self.i_x, self.i_y):
+        for x,y,i in zip(self.i_x, self.i_y, range(self.n_inj)):
             q[x,y] = inj_flow[i]
-            i=i+1
         i=0
-        for x,y in zip(self.p_x, self.p_y):
+        for x,y,i in zip(self.p_x, self.p_y, range(self.n_prod)):
             q[x,y] = prod_flow[i]
-            i=i+1
 
         q[3,3] = q[3,3] - np.sum(q) # to adjust unbalanced source term in arbitary location in the field due to precision error
         return q
