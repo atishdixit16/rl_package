@@ -150,7 +150,7 @@ class ResSimEnv_v2():
 
     def step(self, action):
 
-        q = self.action_to_q_mapping_cont(action)
+        q = self.action_to_q_mapping_binary(action)
         state, reward, done, info = self.sim_step(q)
 
         return state, reward, done, info
