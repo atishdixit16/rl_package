@@ -10,7 +10,7 @@ import rl_package
 from rl_package.ressim_env.ressim import Grid, SaturationEquation, PressureEquation
 from rl_package.ressim_env.utils import linear_mobility, quadratic_mobility, lamb_fn, f_fn, df_fn
 
-class ResSimEnv_v1():
+class ResSimEnv_v2():
 
     def __init__(self,
                  grid, k, phi, s_wir, s_oir, # domain properties
@@ -85,11 +85,12 @@ class ResSimEnv_v1():
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
+    
+    def action_to_q_mapping_binary(self, action): 
 
-    def action_to_q_mapping_cont(self, action):
-
-        assert all(action>=0), 'Invalid action. condition violated: all(action>0) = True'        
-        # convert input array into producer/injector 
+        assert all(action>=0) and all(action<=1.0), 'Invalid action. condition violated: all(action>0) and all(action<1) = True' 
+        action = np.round(action)
+        # convert input array into producer/injector flow values
         inj_flow = action[:self.n_inj] / np.sum(action[:self.n_inj])
         inj_flow = self.Q * inj_flow
         prod_flow = action[self.n_inj:] / np.sum(action[self.n_inj:])
@@ -100,16 +101,14 @@ class ResSimEnv_v1():
 
         # add producer/injector flow values
         q = np.zeros(self.grid.shape)
-        for x,y,i in zip(self.i_x, self.i_y,range(self.n_inj) ):
+        for x,y,i in zip(self.i_x, self.i_y, range(self.n_inj)):
             q[x,y] = inj_flow[i]
-
         for x,y,i in zip(self.p_x, self.p_y, range(self.n_prod)):
             q[x,y] = prod_flow[i]
 
         q[3,3] = q[3,3] - np.sum(q) # to adjust unbalanced source term in arbitary location in the field due to precision error
         return q
 
-    
     def sim_step(self, q):
 
         self.q = q
