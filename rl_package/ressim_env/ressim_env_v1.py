@@ -136,7 +136,7 @@ class ResSimEnv_v1():
 
         #reward
         reward = oil_pr / self.ooip # recovery rate
-        # reward = reward*100 # in percentage
+        reward = reward*100 # in percentage
 
         # done
         self.episode_step += 1
