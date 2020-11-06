@@ -128,10 +128,8 @@ class ResSimEnv_v1():
 
         # add producer/injector flow values
         q = np.zeros(self.grid.shape)
-        i=0
         for x,y,i in zip(self.i_x, self.i_y, range(self.n_inj)):
             q[x,y] = inj_flow[i]
-        i=0
         for x,y,i in zip(self.p_x, self.p_y, range(self.n_prod)):
             q[x,y] = prod_flow[i]
 
@@ -164,7 +162,7 @@ class ResSimEnv_v1():
 
         #reward
         reward = oil_pr / self.ooip # recovery rate
-        reward = reward*100 # in percentage
+        # reward = reward*100 # in percentage
 
         # done
         self.episode_step += 1
