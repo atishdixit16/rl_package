@@ -355,7 +355,8 @@ class SaturationEquation(Parameters):
                 return dr
 
         s = self.solve(residual, s0=s, residual_jac=residual_jac)
-        self.s = s.reshape(*grid.shape)  
+        s = np.clip(s,0.0,1.0)
+        self.s = s.reshape(*grid.shape) 
 
     def step_implicit(self, dt):
         grid, q, phi, s = self.grid, self.q, self.phi, self.s
