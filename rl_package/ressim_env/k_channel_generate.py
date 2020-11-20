@@ -14,7 +14,7 @@ seed: seed for reproducibility
 
 '''
 
-def get_channel_end_indices(nx=32, ny=32, lx=1.0, ly=1.0, channel_width_range=0.125, seed=1):
+def get_channel_end_indices(nx=32, ny=32, lx=1.0, ly=1.0, channel_width=0.125, seed=1):
     assert channel_width<ly, 'invalid channel width. condition violated: channel_width < ly'
     channel_left_end = np.random.uniform(0,ly-channel_width)
     channel_right_end = np.random.uniform(0,ly-channel_width)
