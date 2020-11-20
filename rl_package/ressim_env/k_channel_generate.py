@@ -14,7 +14,7 @@ seed: seed for reproducibility
 
 '''
 
-def get_channel_end_indices(nx=32, ny=32, lx=1.0, ly=1.0, channel_width=0.125, seed=1):
+def get_channel_end_indices(nx=32, ny=32, lx=1.0, ly=1.0, channel_width_range=0.125, seed=1):
     assert channel_width<ly, 'invalid channel width. condition violated: channel_width < ly'
     channel_left_end = np.random.uniform(0,ly-channel_width)
     channel_right_end = np.random.uniform(0,ly-channel_width)
@@ -33,10 +33,11 @@ def single_generate(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channe
     return k
 
 
-def batch_generate(nx=32, ny=32, lx=1.0, ly=1.0, channel_k=1.0, base_k=0.01, channel_width=0.125, sample_size=10, seed=1):
+def batch_generate(nx=32, ny=32, lx=1.0, ly=1.0, channel_k=1.0, base_k=0.01, channel_width_range=(0.1,0.3), sample_size=10, seed=1):
     np.random.seed(seed) #for reproducibility
     k_batch = []
     for _ in range(sample_size):
+        channel_width = np.random.uniform(channel_width_range[0], channel_width_range[1]) 
         channel_left_end, channel_right_end = get_channel_end_indices(nx, ny, lx, ly, channel_width, seed)
         k = single_generate(nx,ny,lx,ly,channel_k, base_k, channel_width, channel_left_end, channel_right_end)
         k_batch.append(k)
