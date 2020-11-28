@@ -43,13 +43,15 @@ def batch_generate(nx=32, ny=32, lx=1.0, ly=1.0, channel_k=1.0, base_k=0.01, cha
         k_batch.append(k)
     return np.array(k_batch)
 
-def generate_train_data(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width=0.125):
-    top=0.125
-    mid=0.4375
-    bottom=0.75
-    k0 = single_generate(nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=mid, channel_right_end=mid)
-    k1 = single_generate( nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=top, channel_right_end=top)
-    k2 = single_generate( nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=bottom, channel_right_end=bottom)
-    k3 = single_generate( nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=top, channel_right_end=bottom)
-    k4 = single_generate( nx=nx,ny=ny,lx=lx,ly=ly,channel_k=channel_k, base_k=base_k, channel_width=channel_width, channel_left_end=bottom, channel_right_end=top)
-    return np.array([k0, k1, k2, k3, k4])
+def generate_domain_based_train_data(nx=32,ny=32,lx=1.0,ly=1.0,channel_k=1.0, base_k=0.01, channel_width_range=(0.1,0.3), seed=1 ):
+    np.random.seed(seed) #for reproducibility
+    end_values = [0.125, 0.4375, 0.75 ]
+    k_batch = []
+    for l_end in end_values:
+        for r_end in end_values:
+            c_width = np.random.uniform(channel_width_range[0], channel_width_range[1]) 
+            k = single_generate(nx=nx,ny=ny,lx=lx,ly=ly,
+                                channel_k=channel_k, base_k=base_k, 
+                                channel_width=c_width, channel_left_end=l_end, channel_right_end=r_end)
+            k_batch.append(k)
+    return np.array(k_batch)
